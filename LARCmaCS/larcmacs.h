@@ -1,4 +1,4 @@
-﻿#ifndef LARCMACS_H
+#ifndef LARCMACS_H
 #define LARCMACS_H
 
 #include <QWidget>
@@ -49,6 +49,7 @@ private:
     float drawscale;
     qreal sizescene;
     QString wifiaddrdata[NUM_CONTROL_ROBOTS];
+    QUdpSocket socket;
 
 private slots:
     void Send2BTChangeit(bool *BTbox);
@@ -66,7 +67,7 @@ private slots:
     void on_PickRobot_pushButton_clicked();
     void on_pushButton_SetMLdir_clicked();
     void on_pushButton_RC_clicked();
-    void remcontrolsender(int l, int r,int k, int b);
+    void remcontrolsender(int l, int r,int k, int b, bool kickUp);
     void on_checkBox_BT_stateChanged(int arg1);
     void on_pushButton_clicked();
 
@@ -77,6 +78,14 @@ private slots:
 
     void on_checkBox_MlMaxFreq_stateChanged(int arg1);
 
+    void on_AddRobot_pushButton_clicked();
+
+    void on_robotIpList_activated(const QString &arg1);
+
+    void on_pushButton_RemoteControl_clicked();
+
+    void on_robotIndex_currentIndexChanged(int index);
+
 signals:
     void sendToConnectorRM(int N,QByteArray command);
     void receiveMacArray(QString*);
@@ -85,6 +94,7 @@ signals:
     void MLEvalString(QString s);
     void updateRobots();
     void openPort(QString);
+    void addIp(int, QString);
 };
 
 #endif // LARCMACS_H
