@@ -193,6 +193,11 @@ void ConnectorWorker::udpBroadcastRequestIP()
 
 }
 
+void ConnectorWorker::addIp(int id, QString ip) {
+    numIP[id+1] = ip;
+    qDebug() << numIP;
+}
+
 void ConnectorWorker::udpProcessPendingDatagrams()
 {
       qDebug()<<"DATAGRAM!";
