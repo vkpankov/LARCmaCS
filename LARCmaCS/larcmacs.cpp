@@ -1,4 +1,4 @@
-﻿#include <math.h>
+#include <math.h>
 #include "larcmacs.h"
 #include "ui_larcmacs.h"
 #include "packetSSL.h"
@@ -60,8 +60,12 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     connect(&mainalg.worker,SIGNAL(sendToBTtransmitter(char*)),&bttransmitter.worker,SLOT(addmessage(char*)));
 
     //remotecontrol
-    connect(&remotecontol,SIGNAL(RC_control(int,int,int,int)),this,SLOT(remcontrolsender(int, int,int, int)));
+    connect(&remotecontol,SIGNAL(RC_control(int,int,int,int, bool)),this,SLOT(remcontrolsender(int, int,int, int, bool)));
     connect(this,SIGNAL(sendToConnectorRM(int,QByteArray)),&connector.worker,SLOT(run(int,QByteArray)));
+
+    QObject::connect(this, SIGNAL(addIp(int, QString)),
+                         &connector.worker, SLOT(addIp(int, QString)));
+
 
     //fieldScene Update
     connect(&receiver.worker,SIGNAL(activateGUI()),this,SLOT(fieldsceneUpdateRobots()));
@@ -81,6 +85,14 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     UpdateSSLFPS("FPS=0");
     Send2BTChangeit(btform.Send2BT);
 
+    ui->robotIndex->addItem("1");
+    ui->robotIndex->addItem("2");
+    ui->robotIndex->addItem("3");
+    ui->robotIndex->addItem("4");
+    ui->robotIndex->addItem("5");
+    ui->robotIndex->addItem("6");
+
+
 }
 
 void LARCmaCS::displayPorts(QStringList portList)
@@ -93,60 +105,127 @@ void LARCmaCS::Send2BTChangeit(bool * BTbox)
 {
     ui->checkBox_BT->setChecked(btform.Send2BT[ui->RobotComboBox->currentIndex()]);
 }
-void LARCmaCS::remcontrolsender(int l, int r,int k, int b)
+
+quint32 Crc32(QByteArray buf, int len)
 {
-    //qDebug()<<"REM!";
-    int N=ui->RobotComboBox->currentIndex()+1;
+    uint *crc_table = new uint[256];
+    uint crc;
+    uint i;
+    for (i = 0; i < 256; i++)
+    {
+        uint j;
+        crc = i;
+        for (j = 0; j < 8; j++)
+        {
+            if ((crc & 1) > 0)
+            {
+                crc = (crc >> 1) ^ 0xEDB88320;
+            }
+            else
+            {
+                crc = crc >> 1;
+            }
+        }
+        crc_table[i] = crc;
+    };
+    crc = 0xFFFFFFFF;
+    uint vsp = 0;
+    while (len-- > 0)
+    {
+        crc = crc_table[(crc ^ buf[vsp]) & 0xFF] ^ (crc >> 8);
+        vsp++;
+    }
+    return crc ^ 0xFFFFFFFF;
+}
+struct CommandData {
+    quint32 speed_x;
+    quint32 speed_y;
+    quint32 speed_r;
+    quint32 speed_dribbler;
+    quint8 dribbler_enable;
+    quint32 kicker_volatage_level;
+    quint8 kicker_charge_enable;
+    quint8 kick_up;
+    quint8 kick_forward;
+};
+QByteArray serializeCommand(CommandData data) {
+    QByteArray byteArray;
+    QDataStream baWriter(&byteArray, QIODevice::WriteOnly | QIODevice::Append);
+    baWriter.setByteOrder(QDataStream::LittleEndian);
+    baWriter << (quint8)0xAA;
+    baWriter << (quint8)0xAA;
+    baWriter << (quint8)0xAA;
+    baWriter << (quint8)0xAA;
+    baWriter << data.speed_x;
+    baWriter << data.speed_y;
+    baWriter << data.speed_r;
+    baWriter << data.speed_dribbler;
+    baWriter << data.dribbler_enable;
+    baWriter << data.kicker_volatage_level;
+    baWriter << data.kicker_charge_enable;
+    baWriter << data.kick_up;
+    baWriter << data.kick_forward;
+    quint32 crc =Crc32(byteArray, 28);
+    baWriter << crc;
+    return byteArray;
+}
+
+
+
+void LARCmaCS::remcontrolsender(int l, int r,int k, int b, bool kickUp)
+{
+    QString ip = ui->lineEditRobotIp->text();
+    CommandData data;
+    data.speed_x = l;
+    data.speed_y = r;
+    data.speed_r = k;
+    data.speed_dribbler = 0;
+    data.dribbler_enable = 0;
+
+    if(b!=-1){
+        data.kicker_volatage_level = 4;
+        data.kicker_charge_enable = 1;
+        data.kick_up = kickUp;
+        data.kick_forward = 0;
+    }
+    else{
+        data.kicker_volatage_level = 0;
+        data.kicker_charge_enable = 0;
+        data.kick_up = 0;
+        data.kick_forward = 0;
+    }
+
+    QByteArray byteData = serializeCommand(data);
+
+    if(socket.ConnectedState == QUdpSocket::ConnectedState) {
+        socket.writeDatagram(byteData, byteData.length(), QHostAddress(ip), 10000);
+    }
+    else
+    {
+        socket.connectToHost(ip, 10000);
+        if(socket.ConnectedState == QUdpSocket::ConnectedState) {
+        socket.writeDatagram(byteData, byteData.length(), QHostAddress(ip), 10000);
+        }
+    }
+
+    return;
+
     QByteArray command;
     command.append(QString("rule ").toUtf8());
     command.append(l);
     command.append(r);
     command.append(k);
     command.append(b);
-//    char dat[5];
-//    //dat[0] = 'c';
-//    dat[0] = '<';
-//    dat[1] = r;
-//    dat[2] = l;
-//    dat[3] = k;
-//    dat[4] = '>';
-//    if (port->isOpen())
-//        port->write(dat,5);
-    emit sendToConnectorRM(N,command);
 }
+
+
+
 void LARCmaCS::fieldsceneUpdateRobots()
 {
     fieldscene->UpdateRobots(receiver.worker.detection);
     emit updateRobots();
 }
-/*
-void LARCmaCS::initEnded()
-{
-    ui->initRobotsBtn->setText("Start");
-}
 
-void LARCmaCS::addRobot(QString robot)
-{
-    ui->robotsList->addItem(robot);
-}
-void LARCmaCS::on_initRobotsBtn_clicked()
-{
-    if (!ui->initRobotsBtn->text().compare("Start"))
-    {
-        emit initRobots();
-        ui->initRobotsBtn->setText("Stop");
-    }
-    else
-    {
-        emit stopInit();
-        //        for (int i=0;i<ui->robotsList->count();++i)
-        //        {
-        //            macsArray[i] = ui->robotsList->item(i)->text();
-        //        }
-        ui->initRobotsBtn->setText("Start");
-    }
-}
-*/
 
 LARCmaCS::~LARCmaCS()
 {
@@ -248,6 +327,8 @@ void LARCmaCS::on_pushButton_RC_clicked()
     remotecontol.TimerStart();
 }
 
+
+
 void LARCmaCS::on_checkBox_BT_stateChanged(int arg1)
 {
     btform.Send2BT[ui->RobotComboBox->currentIndex()]=arg1;
@@ -267,4 +348,44 @@ void LARCmaCS::on_openPortButton_clicked()
 void LARCmaCS::on_checkBox_MlMaxFreq_stateChanged(int arg1)
 {
     emit(ChangeMaxPacketFrequencyMod(arg1>0));
+}
+
+
+
+void LARCmaCS::on_AddRobot_pushButton_clicked()
+{
+
+
+    QString robotIp = ui->lineEditRobotIp->text();
+    int foundIndex = ui->robotIpList->findText(robotIp);
+    if(foundIndex==-1)
+        ui->robotIpList->addItem(robotIp, ui->robotIndex->currentIndex());
+    else
+        ui->robotIpList->setCurrentIndex(foundIndex);
+
+    emit(addIp(ui->robotIndex->currentIndex(), robotIp));
+
+}
+
+void LARCmaCS::on_robotIpList_activated(const QString &arg1)
+{
+    ui->lineEditRobotIp->setText(arg1);
+    ui->robotIndex->setCurrentIndex(ui->robotIpList->itemData((ui->robotIpList->currentIndex())).Int - 1);
+}
+
+void LARCmaCS::on_pushButton_RemoteControl_clicked()
+{
+    remotecontol.hide();
+    remotecontol.show();
+    remotecontol.TimerStart();
+}
+
+void LARCmaCS::on_robotIndex_currentIndexChanged(int index)
+{
+
+    int id =  ui->robotIpList->findData(index);
+    if(id>-1){
+        ui->robotIpList->setCurrentIndex(id);
+        ui->lineEditRobotIp->setText(ui->robotIpList->currentText());
+    }
 }
