@@ -89,6 +89,7 @@ public slots:
     void receiveMacArray(QString*);
     void openPort(QString);
     void readPort();
+    void addIp(int id, QString ip);
 };
 
 struct Connector : QObject
