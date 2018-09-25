@@ -23,6 +23,7 @@ void RemoteControl::TimerStart()
 {
     if (!timer.isActive())
     {
+
         qDebug()<<"<RemContril>: Start";
         timer.start(RC_TIMER_CD);
     }
@@ -31,6 +32,7 @@ void RemoteControl::TimerStop()
 {
     if (timer.isActive())
     {
+        emit RC_control(0, 0, 0, 0, 0);
         qDebug()<<"<RemContril>: Stop";
         timer.stop();
     }
@@ -71,14 +73,52 @@ void RemoteControl::keyReleaseEvent(QKeyEvent * key)
     {
         key_shift=0;
     }
+    if(nkey == ' '){
+        qDebug() << "Space release";
+    }
 }
 
 
 void RemoteControl::RC_send(void)
 {
     int L=0,R=0,S=0,K=0,B=0;
+
+    int xVel = 0, yVel = 0, r = 0;
+    bool kickUp = false;
+
+    if(keys[' ']) {
+        kickUp = true;
+    }
+
     if (keys['W'] )
     {
+        yVel = 20;
+    }
+    if (keys['S'])
+    {
+        yVel = -20;
+    }
+    if (keys['A'])
+    {
+        xVel = -20;
+    }
+    if (keys['D'])
+    {
+        xVel = 20;
+    }
+    if (keys['R'])
+    {
+        r = 10;
+    }
+
+    qDebug() << "emit " << xVel << " " << yVel;
+    emit RC_control(xVel, yVel, r, 0, kickUp);
+
+    return;
+
+    if (keys['W'] )
+    {
+
         L+=50;
         R+=50;
     }
@@ -115,7 +155,7 @@ void RemoteControl::RC_send(void)
                              " K=" +QString::number(K)+
                              " B=" +QString::number(B));
     //qDebug()<<L<<" "<<R<<" "<<K<<" "<<S;
-    emit RC_control(L,R,K,B);
+    emit RC_control(L,R,K,B, kickUp);
 }
 
 void RemoteControl::closeEvent(QCloseEvent *)
