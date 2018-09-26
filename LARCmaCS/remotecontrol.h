@@ -23,6 +23,7 @@ private:
     void keyReleaseEvent(QKeyEvent * key);
     int keys[256];
     int key_shift;
+    int effort;
 private slots:
     void RC_send(void);
 public slots:
