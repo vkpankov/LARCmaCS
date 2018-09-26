@@ -71,6 +71,8 @@ void ConnectorWorker::init()
     connect(timer,SIGNAL(timeout()),SLOT(udpBroadcastRequestIP()));
     connect(udpSocket,SIGNAL(readyRead()),this,SLOT(udpProcessPendingDatagrams()));
 
+    numIP[3] = "192.168.43.75";
+
     qDebug()<<"INIT CONNECTOR OK";
 }
 
@@ -172,8 +174,8 @@ void ConnectorWorker::run(int N, QByteArray command){
         }
 
     }
-    else                            //if the packet is for TRIK
-        udpSocket->writeDatagram(command,QHostAddress(numIP[N]),3001);
+    else
+        udpSocket->writeDatagram(command, QHostAddress(numIP[N]), 10000);
 }
 
 void ConnectorWorker::udpBroadcastRequestIP()

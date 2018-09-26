@@ -24,10 +24,10 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     bttransmitter.init();
 
     //robots connect
-    connect(&wifiform,SIGNAL(initRobots()),&connector.worker, SLOT(startBroadcast()));
-    connect(&wifiform,SIGNAL(stopInit()),&connector.worker, SLOT(stopBroadcast()));
-    connect(&connector.worker,SIGNAL(robotAdded(QString)),&wifiform,SLOT(addRobot(QString)));
-    connect(&connector.worker,SIGNAL(allNeededRobotsEnabled()),&wifiform,SLOT(initEnded()));
+//    connect(&wifiform,SIGNAL(initRobots()),&connector.worker, SLOT(startBroadcast()));
+//    connect(&wifiform,SIGNAL(stopInit()),&connector.worker, SLOT(stopBroadcast()));
+//    connect(&connector.worker,SIGNAL(robotAdded(QString)),&wifiform,SLOT(addRobot(QString)));
+//    connect(&connector.worker,SIGNAL(allNeededRobotsEnabled()),&wifiform,SLOT(initEnded()));
 
     // GUIS
     connect(&wifiform,SIGNAL(PickWifiRobot(QString)),this, SLOT(PickWifiRobot(QString)));
@@ -43,7 +43,7 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     connect(this,SIGNAL(ChangeMaxPacketFrequencyMod(bool)),&receiver.worker,SLOT(ChangeMaxPacketFrequencyMod(bool)));
 
     //send command to robots
-    connect(this,SIGNAL(receiveMacArray(QString*)),&connector.worker,SLOT(receiveMacArray(QString*)));
+//    connect(this,SIGNAL(receiveMacArray(QString*)),&connector.worker,SLOT(receiveMacArray(QString*)));
     connect(&mainalg.worker, SIGNAL(sendToConnector(int,QByteArray)), &connector.worker, SLOT(run(int,QByteArray)));
 
     //gui connector
@@ -154,7 +154,7 @@ LARCmaCS::~LARCmaCS()
 }
 
 void LARCmaCS::UpdatePauseState(QString message)
-{ 
+{
     ui->label_Pause->setText(message);
 }
 void LARCmaCS::UpdatePipeStatus(bool status)
