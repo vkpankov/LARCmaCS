@@ -8,6 +8,8 @@
 #include <QtWidgets/QApplication>
 using namespace std;
 
+#include "message.h"
+
 int initConfig(RCConfig *config){
     ifstream configFile;
     string line;
@@ -217,10 +219,16 @@ void MainAlgWorker::run(PacketSSL packetssl)
             if ((newmess[1]>=0) && (newmess[1]<=MAX_NUM_ROBOTS) && ((newmess[1]==0) || (Send2BT[newmess[1]-1]==true)))
                 emit sendToBTtransmitter(newmessage);
 
-            QByteArray command;
-            command.append(QString("rule ").toUtf8());
-            command.append(newmess[2]);
-            command.append(newmess[3]);
+            Message msg;
+            int v_l = newmess[2];
+            int v_r = newmess[3];
+            int v = (v_l + v_r) / 2;
+            double cf = 1.0;
+            int omega = (v_l - v_r) * cf;
+            msg.setSpeedX(v);
+            msg.setSpeedR(omega);
+            QByteArray command = msg.generateByteArray();
+
             if (newmess[1]==0)
                 for (int i=1; i<=MAX_NUM_ROBOTS; i++)
                     emit sendToConnector(i,command);
