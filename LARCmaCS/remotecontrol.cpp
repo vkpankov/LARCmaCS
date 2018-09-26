@@ -16,6 +16,7 @@ RemoteControl::RemoteControl(QWidget *parent) :
     for(int i=0; i<256; i++)
         keys[i]=0;
     key_shift=0;
+    effort = 1;
 
 }
 
@@ -90,26 +91,43 @@ void RemoteControl::RC_send(void)
         kickUp = true;
     }
 
-    if (keys['W'] )
-    {
-        yVel = 20;
+    if(keys[38]&&key_shift){
+        thrust++;
+        qDebug() << "Effort: " << effort;
+        return;
     }
-    if (keys['S'])
-    {
-        yVel = -20;
+    if(keys[40]&&key_shift){
+        if(thrust>1)
+        thrust--;
+        qDebug() << "Effort: " << effort;
+        return;
     }
-    if (keys['A'])
+
+    if (keys['W'] || keys[38] )
     {
-        xVel = -20;
+        yVel = 10*effort;
     }
-    if (keys['D'])
+    if (keys['S'] || keys[40])
     {
-        xVel = 20;
+        yVel = -10*effort;
+    }
+    if (keys['A'] || keys[37])
+    {
+        xVel = -20*effort;
+    }
+    if (keys['D'] || keys[39])
+    {
+        xVel = 20*effort;
     }
     if (keys['R'])
     {
-        r = 10;
+        r = 10*effort;
     }
+    if (keys['F'])
+    {
+        r = -10*effort;
+    }
+
 
     qDebug() << "emit " << xVel << " " << yVel;
     emit RC_control(xVel, yVel, r, 0, kickUp);
