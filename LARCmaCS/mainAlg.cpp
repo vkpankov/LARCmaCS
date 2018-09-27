@@ -225,7 +225,7 @@ void MainAlgWorker::run(PacketSSL packetssl)
             int v = (v_l + v_r) / 2;
             double cf = 1.0;
             int omega = (v_l - v_r) * cf;
-            msg.setSpeedX(v);
+            msg.setSpeedY(v);
             msg.setSpeedR(omega);
             QByteArray command = msg.generateByteArray();
 

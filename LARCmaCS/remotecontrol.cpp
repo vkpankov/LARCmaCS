@@ -17,7 +17,6 @@ RemoteControl::RemoteControl(QWidget *parent) :
         keys[i]=0;
     key_shift=0;
     effort = 1;
-
 }
 
 void RemoteControl::TimerStart()
@@ -92,13 +91,13 @@ void RemoteControl::RC_send(void)
     }
 
     if(keys[38]&&key_shift){
-        thrust++;
+        effort++;
         qDebug() << "Effort: " << effort;
         return;
     }
     if(keys[40]&&key_shift){
-        if(thrust>1)
-        thrust--;
+        if(effort>1)
+        effort--;
         qDebug() << "Effort: " << effort;
         return;
     }
