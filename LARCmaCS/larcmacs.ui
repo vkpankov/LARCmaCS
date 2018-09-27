@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>LARCmaCS</string>
   </property>
-  <property name="toolTipDuration">
+  <property name="toolTipDuration" stdset="0">
    <number>-1</number>
   </property>
   <widget class="QGraphicsView" name="fieldView">
@@ -390,6 +390,87 @@
    </property>
    <property name="text">
     <string>MaxMLPacketFrequencyMod</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_Connect">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>530</y>
+     <width>121</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Connect</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton_RemoteControl">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>530</y>
+     <width>91</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Remote control</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="robotIpList">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>500</y>
+     <width>221</width>
+     <height>22</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEditRobotIp">
+   <property name="geometry">
+    <rect>
+     <x>590</x>
+     <y>470</y>
+     <width>81</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="inputMask">
+    <string/>
+   </property>
+   <property name="text">
+    <string>192.168.43.10</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="AddRobot_pushButton">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>470</y>
+     <width>91</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Add</string>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="robotIndex">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>470</y>
+     <width>31</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="currentText">
+    <string/>
+   </property>
+   <property name="currentIndex">
+    <number>-1</number>
    </property>
   </widget>
  </widget>
