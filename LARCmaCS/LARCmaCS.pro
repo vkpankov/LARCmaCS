@@ -7,9 +7,6 @@
 #read the global configuration file
 include( ../config.pro.inc )
 
-#qextserialport for  BTtransmitter
-include(../LARCmaCS/src/qextserialport/qextserialport.pri)
-
 #where to place built objects
 OBJECTS_DIR = ../build/LARCmaCS/obj$${SUFFIX_STR}
 
