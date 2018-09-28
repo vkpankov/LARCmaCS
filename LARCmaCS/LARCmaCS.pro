@@ -7,9 +7,6 @@
 #read the global configuration file
 include( ../config.pro.inc )
 
-#qextserialport for  BTtransmitter
-include(../LARCmaCS/src/qextserialport/qextserialport.pri)
-
 #where to place built objects
 OBJECTS_DIR = ../build/LARCmaCS/obj$${SUFFIX_STR}
 
@@ -44,7 +41,6 @@ win32 {
 
 QT       += core gui
 QT       += network
-QT      += serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -72,9 +68,6 @@ SOURCES += main.cpp\
     mainAlg.cpp \
     mlData.cpp \
     connector.cpp \
-    BTtransmitter.cpp \
-    btform.cpp \
-    wifiform.cpp \
     remotecontrol.cpp \
     message.cpp \
 
@@ -94,13 +87,8 @@ HEADERS  += \
     mainAlg.h \
     mlData.h \
     connector.h \
-    BTtransmitter.h \
-    btform.h \
-    wifiform.h \
     remotecontrol.h \
     message.h \
 
 FORMS    += larcmacs.ui \
-    btform.ui \
-    wifiform.ui \
     remotecontrol.ui

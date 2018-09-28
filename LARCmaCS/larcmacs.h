@@ -8,9 +8,6 @@
 #include "mainAlg.h"
 #include "sceneView.h"
 #include "connector.h"
-#include "BTtransmitter.h"
-#include "BTform.h"
-#include "WiFiForm.h"
 #include "remotecontrol.h"
 
 
@@ -27,16 +24,13 @@ class LARCmaCS : public QWidget
 
 public:
     RemoteControl remotecontol;
-    WifiForm wifiform;
-    BTform btform;
     explicit LARCmaCS(QWidget *parent = 0);
     ~LARCmaCS();
 
     FieldScene *fieldscene;
     QString * macsArray;
 
-protected:    
-    BTtransmitter bttransmitter;
+protected:
     bool scalingRequested;
     sceneView sceneview;
     Receiver receiver;
@@ -52,29 +46,18 @@ private:
     QUdpSocket socket;
 
 private slots:
-    void Send2BTChangeit(bool *BTbox);
     void fieldsceneUpdateRobots();
     void UpdateSSLFPS(QString message);
     void UpdateStatusBar(QString message);
-    void UpdatePipeStatus(bool status);
     void UpdatePauseState(QString message);
     void updateView();
     void scaleView(int);
 
 private slots:
-    void PickWifiRobot(QString addr);
     void on_pushButton_Pause_clicked();
-    void on_PickRobot_pushButton_clicked();
     void on_pushButton_SetMLdir_clicked();
     void on_pushButton_RC_clicked();
     void remcontrolsender(int l, int r,int k, int b, bool kickUp);
-    void on_checkBox_BT_stateChanged(int arg1);
-    void on_pushButton_clicked();
-
-    void on_RobotComboBox_currentIndexChanged(int index);
-    void displayPorts(QStringList);
-
-    void on_openPortButton_clicked();
 
     void on_checkBox_MlMaxFreq_stateChanged(int arg1);
 
