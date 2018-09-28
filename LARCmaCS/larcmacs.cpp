@@ -43,6 +43,7 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     //send command to robots
 //    connect(this,SIGNAL(receiveMacArray(QString*)),&connector.worker,SLOT(receiveMacArray(QString*)));
     connect(&mainalg.worker, SIGNAL(sendToConnector(int,QByteArray)), &connector.worker, SLOT(run(int,QByteArray)));
+    connect(this, SIGNAL(coefChanged(double, double)), &mainalg.worker, SLOT(changeCoef(double, double)));
 
     //gui connector
     connect(&sceneview.worker, SIGNAL(updateView()), this, SLOT(updateView()));
@@ -59,6 +60,7 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
 
     QObject::connect(this, SIGNAL(addIp(int, QString)),
                          &connector.worker, SLOT(addIp(int, QString)));
+
 
 
     //fieldScene Update
@@ -318,4 +320,12 @@ void LARCmaCS::on_robotIndex_currentIndexChanged(int index)
         ui->robotIpList->setCurrentIndex(id);
         ui->lineEditRobotIp->setText(ui->robotIpList->currentText());
     }
+}
+
+void LARCmaCS::on_coefButton_clicked()
+{
+    double linearCoef = ui->linearSpeed->text().toDouble();
+    double angularCoef = ui->angularSpeed->text().toDouble();
+
+    emit coefChanged(linearCoef, angularCoef);
 }

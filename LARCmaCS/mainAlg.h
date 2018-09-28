@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QThread>
+#include <QDebug>
 #include <QSharedPointer>
 #include "packetSSL.h"
 #include <iostream>
@@ -19,11 +20,16 @@ struct MainAlgWorker : public QObject
     clock_t timer,timer_s,timer_m,timer_max;
     int Time_count;
     bool Send2BT[MAX_NUM_ROBOTS];
+    double mLinearCoef;
+    double mAngularCoef;
+
 public:
     explicit MainAlgWorker(){
         timer_s=0;
         timer_m=clock();
         Time_count=0;
+        mLinearCoef = 1.0;
+        mAngularCoef = 1.0;
         for (int i=0; i<MAX_NUM_ROBOTS; i++)
         {
             Send2BT[i]=true;
@@ -37,6 +43,13 @@ signals:
     void StatusMessage(QString message);
     void UpdatePauseState(QString message);
 public slots:
+
+    void changeCoef(double linearCoef, double angularCoef) {
+        mLinearCoef = linearCoef;
+        mAngularCoef = angularCoef;
+        qDebug() << "Coefficients changed to" << mLinearCoef << mAngularCoef;
+    }
+
     void start()
     {
         shutdowncomp = false;

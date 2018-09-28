@@ -222,9 +222,8 @@ void MainAlgWorker::run(PacketSSL packetssl)
             Message msg;
             int v_l = newmess[2];
             int v_r = newmess[3];
-            int v = (v_l + v_r) / 2;
-            double cf = 1.0;
-            int omega = (v_l - v_r) * cf;
+            int v = (v_l + v_r) / 2 * mLinearCoef;
+            int omega = (v_l - v_r) * mAngularCoef;
             msg.setSpeedY(v);
             msg.setSpeedR(omega);
             QByteArray command = msg.generateByteArray();
