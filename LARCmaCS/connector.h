@@ -13,20 +13,9 @@
 #include <QTimer>
 #include <QMap>
 
-#include <QtSerialPort/QSerialPort>
-#include <QtSerialPort/QSerialPortInfo>
-
 using std::map;
 using std::vector;
 #include <Set>
-
-//struct ArduinoConnector : QObject
-//{
-//    Q_OBJECT
-//public:
-//    ArduinoConnector(){}
-
-//};
 
 struct ConnectorWorker : QObject
 {
@@ -41,11 +30,6 @@ public:
     QFile *ipFile;
     QUdpSocket *udpSocket;
     map<int const, QString> robotAddrMap;
-//    std::set<int> enabledRobotsSet, curEnabledRobotsSet;
-//    vector<int> portVector;
-//    vector<QTcpSocket *> socketVector;
-//    int tcpSentCount;
-//    int tcpPort;
     int connectedAllSocketsFlag;
     QMap<int,QString> numIP;
     QMap<QString,QString> macIP;
@@ -59,7 +43,6 @@ public:
     int connectedRobots;
     QByteArray command;
 
-    QSerialPort * port;
     char dat[12];
 
 
@@ -78,8 +61,7 @@ public slots:
 
     void start();
     void stop();
-    void run(int N,QByteArray command);
-    void udpBroadcastRequestIP();
+    void run(int N, QByteArray command);
     void udpProcessPendingDatagrams();
 
 
@@ -87,8 +69,6 @@ public slots:
     void startBroadcast();
 
     void receiveMacArray(QString*);
-    void openPort(QString);
-    void readPort();
     void addIp(int id, QString ip);
 };
 
@@ -111,7 +91,6 @@ public:
 
     void init()
     {
-
         worker.moveToThread(&thread);
         qDebug() << "Init connector ok";
         connect(this, SIGNAL(wstart()), &worker, SLOT(start()));
@@ -133,46 +112,5 @@ signals:
     void wstart();
     void wstop();
 };
-
-struct TcpSender : QObject, QRunnable
-{
-    Q_OBJECT
-
-public:
-    QTcpSocket *socket;
-    char leftMotor, rightMotor, kicker, light;
-    // leftMotor: [-100, 100] range - backward / forward
-    // rightMotor: -//-
-    // kicker: 0 / 1 - off / on
-    // light: 1 / 2 / 3 / 4 - off / green / orange / red
-
-    explicit TcpSender(QTcpSocket *gotSocket, int gotLeftMotor, int gotRightMotor, int gotKicker, int gotLight)
-    {
-        socket = gotSocket;
-        leftMotor = gotLeftMotor;
-        rightMotor = gotRightMotor;
-        kicker = gotKicker;
-        light = gotLight;
-    }
-
-    void run()
-    {
-        QByteArray buffer;
-        buffer.append(leftMotor);
-        buffer.append(rightMotor);
-        buffer.append(kicker);
-        buffer.append(light);
-
-        socket->write(buffer);
-
-        qDebug() << "Written smth";
-
-        emit taskDone();
-    }
-
-signals:
-    void taskDone();
-};
-
 
 #endif // CONNECTOR_H
