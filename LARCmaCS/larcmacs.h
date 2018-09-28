@@ -69,6 +69,8 @@ private slots:
 
     void on_robotIndex_currentIndexChanged(int index);
 
+    void on_coefButton_clicked();
+
 signals:
     void sendToConnectorRM(int N,QByteArray command);
     void receiveMacArray(QString*);
@@ -78,6 +80,7 @@ signals:
     void updateRobots();
     void openPort(QString);
     void addIp(int, QString);
+    void coefChanged(double, double);
 };
 
 #endif // LARCMACS_H
