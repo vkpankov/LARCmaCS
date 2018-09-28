@@ -38,6 +38,12 @@ void IpDialog::on_buttonBox_accepted()
     emit(addIp(5, ui->lineEditIp5->text()));
     emit(addIp(6, ui->lineEditIp6->text()));
 
+    this->close();
 
     qDebug("OK");
+}
+
+void IpDialog::on_buttonBox_rejected()
+{
+    this->close();
 }
