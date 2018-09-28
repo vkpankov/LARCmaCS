@@ -64,10 +64,6 @@ public slots:
     void run(int N, QByteArray command);
     void udpProcessPendingDatagrams();
 
-
-    void stopBroadcast();
-    void startBroadcast();
-
     void receiveMacArray(QString*);
     void addIp(int id, QString ip);
 };
