@@ -21,7 +21,6 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     mainalg.init();
     sceneview.init();
     connector.init();
-    bttransmitter.init();
 
     //robots connect
 //    connect(&wifiform,SIGNAL(initRobots()),&connector.worker, SLOT(startBroadcast()));
@@ -30,7 +29,6 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
 //    connect(&connector.worker,SIGNAL(allNeededRobotsEnabled()),&wifiform,SLOT(initEnded()));
 
     // GUIS
-    connect(&wifiform,SIGNAL(PickWifiRobot(QString)),this, SLOT(PickWifiRobot(QString)));
     connect(&connector.worker,SIGNAL(sendPortList(QStringList)),this,SLOT(displayPorts(QStringList)));
     connect(this,SIGNAL(openPort(QString)),&connector.worker,SLOT(openPort(QString)));
 
@@ -54,10 +52,6 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     connect(&mainalg.worker,SIGNAL(UpdatePauseState(QString)),this,SLOT(UpdatePauseState(QString)));
     connect(&mainalg.worker, SIGNAL(StatusMessage(QString)), this, SLOT(UpdateStatusBar(QString)));
     connect(&receiver.worker, SIGNAL(UpdateSSLFPS(QString)), this, SLOT(UpdateSSLFPS(QString)));
-    connect(&bttransmitter.worker, SIGNAL(UpdatePipeStatus(bool)), this, SLOT(UpdatePipeStatus(bool)));
-
-    //SendToBTtransmitter
-    connect(&mainalg.worker,SIGNAL(sendToBTtransmitter(char*)),&bttransmitter.worker,SLOT(addmessage(char*)));
 
     //remotecontrol
     connect(&remotecontol,SIGNAL(RC_control(int,int,int,int, bool)),this,SLOT(remcontrolsender(int, int,int, int, bool)));
@@ -72,18 +66,12 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     connect(this,SIGNAL(updateRobots()),fieldscene,SLOT(update()));
     //    connect(&receiver.worker, SIGNAL(activateGUI(PacketSSL)), &sceneview.worker, SLOT(repaintScene(PacketSSL)));
 
-    //BTsenderform
-    connect(&btform,SIGNAL(Send2BTChange(bool *)),this,SLOT(Send2BTChangeit(bool *)));
-    connect(&btform,SIGNAL(Send2BTChange(bool *)),&mainalg.worker,SLOT(Send2BTChangeit(bool *)));
-
     sceneview.start();
     receiver.start();
     mainalg.start();
     connector.start();
-    bttransmitter.start();
     UpdateStatusBar("Waiting SSL connection...");
     UpdateSSLFPS("FPS=0");
-    Send2BTChangeit(btform.Send2BT);
 
     ui->robotIndex->addItem("1");
     ui->robotIndex->addItem("2");
@@ -91,19 +79,6 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     ui->robotIndex->addItem("4");
     ui->robotIndex->addItem("5");
     ui->robotIndex->addItem("6");
-
-
-}
-
-void LARCmaCS::displayPorts(QStringList portList)
-{
-    //for (int i=0;i<portList.size();++i)
-    ui->ard_comboBox->addItems(portList);
-}
-
-void LARCmaCS::Send2BTChangeit(bool * BTbox)
-{
-    ui->checkBox_BT->setChecked(btform.Send2BT[ui->RobotComboBox->currentIndex()]);
 }
 
 quint32 Crc32(QByteArray buf, int len)
@@ -236,18 +211,17 @@ void LARCmaCS::UpdatePauseState(QString message)
 {
     ui->label_Pause->setText(message);
 }
-void LARCmaCS::UpdatePipeStatus(bool status)
-{
-    ui->pipe_checkBox->setChecked(status);
-}
+
 void LARCmaCS::UpdateSSLFPS(QString message)
 {
     ui->label_SSL_FPS->setText(message);
 }
+
 void LARCmaCS::UpdateStatusBar(QString message)
 {
     ui->StatusLabel->setText(message);
 }
+
 void LARCmaCS::scaleView(int _sizescene)
 {
 //    cout << _sizescene << "  " << sizescene;
@@ -282,12 +256,6 @@ void LARCmaCS::updateView()
   }
 
 }
-void LARCmaCS::on_pushButton_clicked()
-{
-    btform.hide();
-    btform.show();
-    btform.init();
-}
 
 void LARCmaCS::on_pushButton_Pause_clicked()
 {
@@ -303,23 +271,6 @@ void LARCmaCS::on_pushButton_SetMLdir_clicked()
     emit MLEvalString(s);
 }
 
-void LARCmaCS::on_PickRobot_pushButton_clicked()
-{
-    wifiform.hide();
-    wifiform.show();
-}
-
-void LARCmaCS::PickWifiRobot(QString addr)
-{
-    wifiaddrdata[ui->RobotComboBox->currentIndex()]=addr;
-    QString temp;
-    temp.setNum(ui->RobotComboBox->currentIndex()+1);
-    temp=temp+") "+addr;
-    ui->RobotComboBox->setItemText(ui->RobotComboBox->currentIndex(),temp);
-    qDebug()<<"PICK"<<addr;
-    emit receiveMacArray(wifiaddrdata);
-}
-
 void LARCmaCS::on_pushButton_RC_clicked()
 {
     remotecontol.hide();
@@ -327,30 +278,10 @@ void LARCmaCS::on_pushButton_RC_clicked()
     remotecontol.TimerStart();
 }
 
-
-
-void LARCmaCS::on_checkBox_BT_stateChanged(int arg1)
-{
-    btform.Send2BT[ui->RobotComboBox->currentIndex()]=arg1;
-    btform.init();
-}
-
-void LARCmaCS::on_RobotComboBox_currentIndexChanged(int index)
-{
-     ui->checkBox_BT->setChecked(btform.Send2BT[ui->RobotComboBox->currentIndex()]);
-}
-
-void LARCmaCS::on_openPortButton_clicked()
-{
-    emit openPort(ui->ard_comboBox->currentText());
-}
-
 void LARCmaCS::on_checkBox_MlMaxFreq_stateChanged(int arg1)
 {
     emit(ChangeMaxPacketFrequencyMod(arg1>0));
 }
-
-
 
 void LARCmaCS::on_AddRobot_pushButton_clicked()
 {
@@ -382,7 +313,6 @@ void LARCmaCS::on_pushButton_RemoteControl_clicked()
 
 void LARCmaCS::on_robotIndex_currentIndexChanged(int index)
 {
-
     int id =  ui->robotIpList->findData(index);
     if(id>-1){
         ui->robotIpList->setCurrentIndex(id);

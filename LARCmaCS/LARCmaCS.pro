@@ -72,9 +72,6 @@ SOURCES += main.cpp\
     mainAlg.cpp \
     mlData.cpp \
     connector.cpp \
-    BTtransmitter.cpp \
-    btform.cpp \
-    wifiform.cpp \
     remotecontrol.cpp \
     message.cpp \
 
@@ -94,13 +91,8 @@ HEADERS  += \
     mainAlg.h \
     mlData.h \
     connector.h \
-    BTtransmitter.h \
-    btform.h \
-    wifiform.h \
     remotecontrol.h \
     message.h \
 
 FORMS    += larcmacs.ui \
-    btform.ui \
-    wifiform.ui \
     remotecontrol.ui
