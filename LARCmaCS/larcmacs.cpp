@@ -3,6 +3,7 @@
 #include "ui_larcmacs.h"
 #include "packetSSL.h"
 
+
 LARCmaCS::LARCmaCS(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::LARCmaCS),
@@ -74,13 +75,6 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     connector.start();
     UpdateStatusBar("Waiting SSL connection...");
     UpdateSSLFPS("FPS=0");
-
-    ui->robotIndex->addItem("1");
-    ui->robotIndex->addItem("2");
-    ui->robotIndex->addItem("3");
-    ui->robotIndex->addItem("4");
-    ui->robotIndex->addItem("5");
-    ui->robotIndex->addItem("6");
 }
 
 quint32 Crc32(QByteArray buf, int len)
@@ -285,27 +279,6 @@ void LARCmaCS::on_checkBox_MlMaxFreq_stateChanged(int arg1)
     emit(ChangeMaxPacketFrequencyMod(arg1>0));
 }
 
-void LARCmaCS::on_AddRobot_pushButton_clicked()
-{
-
-
-    QString robotIp = ui->lineEditRobotIp->text();
-    int foundIndex = ui->robotIpList->findText(robotIp);
-    if(foundIndex==-1)
-        ui->robotIpList->addItem(robotIp, ui->robotIndex->currentIndex());
-    else
-        ui->robotIpList->setCurrentIndex(foundIndex);
-
-    emit(addIp(ui->robotIndex->currentIndex(), robotIp));
-
-}
-
-void LARCmaCS::on_robotIpList_activated(const QString &arg1)
-{
-    ui->lineEditRobotIp->setText(arg1);
-    ui->robotIndex->setCurrentIndex(ui->robotIpList->itemData((ui->robotIpList->currentIndex())).Int - 1);
-}
-
 void LARCmaCS::on_pushButton_RemoteControl_clicked()
 {
     remotecontol.hide();
@@ -313,14 +286,7 @@ void LARCmaCS::on_pushButton_RemoteControl_clicked()
     remotecontol.TimerStart();
 }
 
-void LARCmaCS::on_robotIndex_currentIndexChanged(int index)
-{
-    int id =  ui->robotIpList->findData(index);
-    if(id>-1){
-        ui->robotIpList->setCurrentIndex(id);
-        ui->lineEditRobotIp->setText(ui->robotIpList->currentText());
-    }
-}
+
 
 void LARCmaCS::on_coefButton_clicked()
 {
@@ -328,4 +294,12 @@ void LARCmaCS::on_coefButton_clicked()
     double angularCoef = ui->angularSpeed->text().toDouble();
 
     emit coefChanged(linearCoef, angularCoef);
+}
+
+void LARCmaCS::on_pushButton_SetupIP_clicked()
+{
+    IpDialog *ipDialog = new IpDialog(connector.worker, this);
+    ipDialog->setWindowModality(Qt::WindowModality::WindowModal);
+    ipDialog->open();
+    qDebug() << connector.worker.numIP;
 }

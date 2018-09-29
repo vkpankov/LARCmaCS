@@ -9,6 +9,7 @@
 #include "sceneView.h"
 #include "connector.h"
 #include "remotecontrol.h"
+#include "ipdialog.h"
 
 
 #define NUM_CONTROL_ROBOTS 12
@@ -61,15 +62,11 @@ private slots:
 
     void on_checkBox_MlMaxFreq_stateChanged(int arg1);
 
-    void on_AddRobot_pushButton_clicked();
-
-    void on_robotIpList_activated(const QString &arg1);
-
     void on_pushButton_RemoteControl_clicked();
 
-    void on_robotIndex_currentIndexChanged(int index);
-
     void on_coefButton_clicked();
+
+    void on_pushButton_SetupIP_clicked();
 
 signals:
     void sendToConnectorRM(int N,QByteArray command);

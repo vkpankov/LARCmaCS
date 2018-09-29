@@ -70,6 +70,7 @@ SOURCES += main.cpp\
     connector.cpp \
     remotecontrol.cpp \
     message.cpp \
+    ipdialog.cpp
 
 HEADERS  += \
   $${SHARED_DIR}/net/netraw.h \
@@ -89,6 +90,8 @@ HEADERS  += \
     connector.h \
     remotecontrol.h \
     message.h \
+    ipdialog.h
 
 FORMS    += larcmacs.ui \
-    remotecontrol.ui
+    remotecontrol.ui \
+    ipdialog.ui

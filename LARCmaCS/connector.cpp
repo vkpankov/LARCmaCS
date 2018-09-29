@@ -79,8 +79,12 @@ void ConnectorWorker::run(int N, QByteArray command){
 }
 
 void ConnectorWorker::addIp(int id, QString ip) {
-    numIP[id+1] = ip;
-    qDebug() << numIP;
+    if(ip.contains(".")){
+        numIP[id] = ip;
+    }
+    else{
+         numIP[id] = "";
+    }
 }
 
 void ConnectorWorker::udpProcessPendingDatagrams()
