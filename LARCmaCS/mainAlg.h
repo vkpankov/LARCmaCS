@@ -8,7 +8,7 @@
 #include "packetSSL.h"
 #include <iostream>
 #include "mlData.h"
-
+#include "client.h"
 #define MAX_NUM_ROBOTS 12
 
 using namespace std;
@@ -22,6 +22,7 @@ struct MainAlgWorker : public QObject
     bool Send2BT[MAX_NUM_ROBOTS];
     double mLinearCoef;
     double mAngularCoef;
+    Client client;
 
 public:
     explicit MainAlgWorker(){
@@ -30,10 +31,15 @@ public:
         Time_count=0;
         mLinearCoef = 1.0;
         mAngularCoef = 1.0;
+        client.connectToHost("192.168.0.102");
         for (int i=0; i<MAX_NUM_ROBOTS; i++)
         {
             Send2BT[i]=true;
         }
+        QTimer *mTimer = new QTimer();
+        mTimer->setInterval(500);
+        connect(mTimer, SIGNAL(timeout()), this, SLOT(sendToPult()));
+        mTimer->start();
     }
     ~MainAlgWorker() {}
 signals:
@@ -43,6 +49,11 @@ signals:
     void StatusMessage(QString message);
     void UpdatePauseState(QString message);
 public slots:
+
+    void sendToPult() {
+        QString hello = "1";
+        client.writeData(hello.toUtf8());
+    }
 
     void changeCoef(double linearCoef, double angularCoef) {
         mLinearCoef = linearCoef;
@@ -72,6 +83,7 @@ private:
     MlData fmldata;
     bool fmtlab;
     bool shutdowncomp;
+
 };
 
 struct MainAlg : public QObject
