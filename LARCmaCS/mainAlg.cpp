@@ -224,11 +224,6 @@ void MainAlgWorker::run(PacketSSL packetssl)
             int v_r = newmess[3];
             int kick = newmess[4];
 
-            if (newmess[5]) {
-                QString hello = "hello word!";
-                client.writeData(hello.toUtf8());
-            }
-
             int v = (v_l + v_r) / 2 * mLinearCoef;
             int omega = (v_l - v_r) * mAngularCoef;
             msg.setKickerChargeEnable(1);
