@@ -229,7 +229,6 @@ void MainAlgWorker::run(PacketSSL packetssl)
                 client.writeData(hello.toUtf8());
             }
 
-
             int v = (v_l + v_r) / 2 * mLinearCoef;
             int omega = (v_l - v_r) * mAngularCoef;
             msg.setKickerChargeEnable(1);
