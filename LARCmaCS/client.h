@@ -1,5 +1,5 @@
-#ifndef CLIENT_H
-#define CLIENT_H
+#pragma once
+
 #include <QtCore>
 #include <QtNetwork>
 #include <QtNetwork>
@@ -11,10 +11,10 @@ public:
     explicit Client(QObject *parent = 0);
 
 public slots:
-    bool connectToHost(QString host);
+    bool connectToHost(QString host, quint16 port);
     bool writeData(QByteArray data);
 
 private:
+    QByteArray IntToArray(qint32 source);
     QTcpSocket *socket;
 };
-#endif // CLIENT_H

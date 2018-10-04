@@ -7,9 +7,9 @@ Client::Client(QObject *parent) : QObject(parent)
     socket = new QTcpSocket(this);
 }
 
-bool Client::connectToHost(QString host)
+bool Client::connectToHost(QString host, quint16 port)
 {
-    socket->connectToHost(host, 8005);
+    socket->connectToHost(host, port);
     return socket->waitForConnected();
 }
 
@@ -17,7 +17,7 @@ bool Client::writeData(QByteArray data)
 {
     if(socket->state() == QAbstractSocket::ConnectedState)
     {
-        socket->write(IntToArray(data.size())); //write size of data
+        //socket->write(IntToArray(data.size())); //write size of data
         socket->write(data); //write the data itself
         return socket->waitForBytesWritten();
     }

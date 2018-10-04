@@ -225,8 +225,8 @@ void MainAlgWorker::run(PacketSSL packetssl)
             int kick = newmess[4];
 
             if (newmess[5]) {
-                QString hello = "hello word!";
-                client.writeData(hello.toUtf8());
+                QString stop_sig = "1";
+                client.writeData(stop_sig.toUtf8());
             }
 
             int v = (v_l + v_r) / 2 * mLinearCoef;
