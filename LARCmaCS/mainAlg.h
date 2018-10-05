@@ -5,10 +5,11 @@
 #include <QThread>
 #include <QDebug>
 #include <QSharedPointer>
+#include <QFile>
 #include "packetSSL.h"
 #include <iostream>
 #include "mlData.h"
-
+#include "client.h"
 #define MAX_NUM_ROBOTS 12
 
 using namespace std;
@@ -22,19 +23,10 @@ struct MainAlgWorker : public QObject
     bool Send2BT[MAX_NUM_ROBOTS];
     double mLinearCoef;
     double mAngularCoef;
+    Client client;
 
 public:
-    explicit MainAlgWorker(){
-        timer_s=0;
-        timer_m=clock();
-        Time_count=0;
-        mLinearCoef = 1.0;
-        mAngularCoef = 1.0;
-        for (int i=0; i<MAX_NUM_ROBOTS; i++)
-        {
-            Send2BT[i]=true;
-        }
-    }
+    MainAlgWorker();
     ~MainAlgWorker() {}
 signals:
     void sendToConnector(int N,QByteArray command);

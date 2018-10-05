@@ -165,6 +165,28 @@ void MainAlgWorker::Pause()
     engEvalString(fmldata.ep, "PAUSE();");
 }
 #include "QDebug"
+MainAlgWorker::MainAlgWorker()
+{
+        timer_s=0;
+        timer_m=clock();
+        Time_count=0;
+        mLinearCoef = 1.0;
+        mAngularCoef = 1.0;
+        QFile addrFile("gamepads.txt");
+        if (!addrFile.open(QIODevice::ReadOnly)) {
+            qDebug() << "File with addresses is not opened!!!";
+        }
+
+        QTextStream in(&addrFile);
+        auto allAddrs = in.readAll().split("\n", QString::SkipEmptyParts).filter(QRegExp("^[^#;]"));
+        client.initFromList(allAddrs);
+
+        for (int i=0; i<MAX_NUM_ROBOTS; i++)
+        {
+            Send2BT[i]=true;
+        }
+}
+
 void MainAlgWorker::Send2BTChangeit(bool * send2BT_)
 {
     for (int i=0; i<MAX_NUM_ROBOTS; i++)
@@ -223,6 +245,12 @@ void MainAlgWorker::run(PacketSSL packetssl)
             int v_l = newmess[2];
             int v_r = newmess[3];
             int kick = newmess[4];
+
+            if (newmess[5]) {
+                QString stop_sig = "1";
+                client.writeData(stop_sig.toUtf8());
+            }
+
             int v = (v_l + v_r) / 2 * mLinearCoef;
             int omega = (v_l - v_r) * mAngularCoef;
             msg.setKickerChargeEnable(1);
