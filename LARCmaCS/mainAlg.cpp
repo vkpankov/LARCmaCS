@@ -165,6 +165,28 @@ void MainAlgWorker::Pause()
     engEvalString(fmldata.ep, "PAUSE();");
 }
 #include "QDebug"
+MainAlgWorker::MainAlgWorker()
+{
+        timer_s=0;
+        timer_m=clock();
+        Time_count=0;
+        mLinearCoef = 1.0;
+        mAngularCoef = 1.0;
+        QFile addrFile("gamepads.txt");
+        if (!addrFile.open(QIODevice::ReadOnly)) {
+            qDebug() << "File with addresses is not opened!!!";
+        }
+
+        QTextStream in(&addrFile);
+        auto allAddrs = in.readAll().split("\n", QString::SkipEmptyParts).filter(QRegExp("^[^#;]"));
+        client.initFromList(allAddrs);
+
+        for (int i=0; i<MAX_NUM_ROBOTS; i++)
+        {
+            Send2BT[i]=true;
+        }
+}
+
 void MainAlgWorker::Send2BTChangeit(bool * send2BT_)
 {
     for (int i=0; i<MAX_NUM_ROBOTS; i++)

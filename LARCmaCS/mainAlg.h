@@ -5,13 +5,12 @@
 #include <QThread>
 #include <QDebug>
 #include <QSharedPointer>
+#include <QFile>
 #include "packetSSL.h"
 #include <iostream>
 #include "mlData.h"
 #include "client.h"
 #define MAX_NUM_ROBOTS 12
-#define IP_TO_CONNECT "192.168.0.107"
-#define PORT_TO_CONNECT 8005
 
 using namespace std;
 #include <time.h>       /* clock_t, clock(), CLOCKS_PER_SEC */
@@ -27,18 +26,7 @@ struct MainAlgWorker : public QObject
     Client client;
 
 public:
-    explicit MainAlgWorker(){
-        timer_s=0;
-        timer_m=clock();
-        Time_count=0;
-        mLinearCoef = 1.0;
-        mAngularCoef = 1.0;
-        client.connectToHost(IP_TO_CONNECT, PORT_TO_CONNECT);
-        for (int i=0; i<MAX_NUM_ROBOTS; i++)
-        {
-            Send2BT[i]=true;
-        }
-    }
+    MainAlgWorker();
     ~MainAlgWorker() {}
 signals:
     void sendToConnector(int N,QByteArray command);

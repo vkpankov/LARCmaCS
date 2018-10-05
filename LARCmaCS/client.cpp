@@ -1,35 +1,40 @@
 #include "client.h"
 
-static inline QByteArray IntToArray(qint32 source);
+#include <QString>
 
 Client::Client(QObject *parent) : QObject(parent)
+{}
+
+Client::~Client()
 {
-    socket = new QTcpSocket(this);
+    qDeleteAll(sockets);
 }
 
-bool Client::connectToHost(QString host, quint16 port)
+bool Client::initFromList(const QStringList &addrs)
 {
-    socket->connectToHost(host, port);
-    return socket->waitForConnected();
-}
-
-bool Client::writeData(QByteArray data)
-{
-    if(socket->state() == QAbstractSocket::ConnectedState)
-    {
-        //socket->write(IntToArray(data.size())); //write size of data
-        socket->write(data); //write the data itself
-        return socket->waitForBytesWritten();
+    for (auto &addr : addrs) {
+        auto host_port = addr.split(":");
+        auto s = new QTcpSocket();
+        qDebug() << "Connection to" << host_port;
+        s->connectToHost(host_port[0], host_port[1].toInt());
+        if (!s->waitForConnected()) {
+            return false;
+        }
+        sockets.push_back(s);
     }
-    else
-        return false;
+    return true;
 }
 
-QByteArray IntToArray(qint32 source) //Use qint32 to ensure that the number have 4 bytes
+bool Client::writeData(const QByteArray &data)
 {
-    //Avoid use of cast, this is the Qt way to serialize objects
-    QByteArray temp;
-    QDataStream data(&temp, QIODevice::ReadWrite);
-    data << source;
-    return temp;
+    auto res = true;
+    for (auto &socket : sockets) {
+        if(socket->state() == QAbstractSocket::ConnectedState)
+        {
+            socket->write(data); //write the data itself
+            res = res && socket->waitForBytesWritten();
+        }
+    }
+
+    return res;
 }
