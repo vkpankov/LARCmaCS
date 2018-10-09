@@ -1,0 +1,3 @@
+[submodule "MLScripts/MLscripts"]
+	path = MLScripts/MLscripts
+	url = https://github.com/robocup-ssl-russia/MLscripts.git
