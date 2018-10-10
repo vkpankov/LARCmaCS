@@ -226,7 +226,7 @@
     <enum>Qt::LeftToRight</enum>
    </property>
    <property name="text">
-    <string>1</string>
+    <string>0.5</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -242,7 +242,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>1</string>
+    <string>0.3</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
