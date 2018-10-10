@@ -170,8 +170,8 @@ MainAlgWorker::MainAlgWorker()
         timer_s=0;
         timer_m=clock();
         Time_count=0;
-        mLinearCoef = 1.0;
-        mAngularCoef = 1.0;
+        mLinearCoef = 0.5;
+        mAngularCoef = 0.3;
         QFile addrFile("gamepads.txt");
         if (!addrFile.open(QIODevice::ReadOnly)) {
             qDebug() << "File with addresses is not opened!!!";
