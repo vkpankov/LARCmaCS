@@ -70,6 +70,7 @@ bool RoboCupSSLClient::receive(SSL_WrapperPacket & packet) {
   int r=0;
   r = mc.recv(in_buffer,MaxDataGramSize,src);
   if (r>0) {
+    //fprintf(stdout, "@@@@@@@@@@"); check receiving!!
     fflush(stdout);
     //decode packet:
     return packet.ParseFromArray(in_buffer,r);

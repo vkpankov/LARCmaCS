@@ -18,7 +18,7 @@ void ReceiverWorker::run()
 
     int idCam = 0;
 
-    client.open(false);
+    client.open(false);  // open UDP port
 
     int packetsNum = 0;
 
