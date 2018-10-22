@@ -1,5 +1,4 @@
-#ifndef MLDATA_H
-#define MLDATA_H
+#pragma once
 
 #include <iostream>
 #include "engine.h"
@@ -46,5 +45,3 @@ public:
     mxArray *Back_Amount;
     mxArray *Back_Length;
 };
-
-#endif // MLDATA_H

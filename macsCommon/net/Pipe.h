@@ -1,6 +1,4 @@
 #pragma once
-#ifndef PIPE_H
-#define PIPE_H
 
 #include <winsock2.h>
 #include <stdio.h>
@@ -315,4 +313,4 @@ public:
 		if (status) CloseHandle(hPipe);
 	}
 };
-#endif
+

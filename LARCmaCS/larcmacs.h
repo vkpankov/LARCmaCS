@@ -1,5 +1,4 @@
-#ifndef LARCMACS_H
-#define LARCMACS_H
+#pragma once
 
 #include <QWidget>
 
@@ -79,5 +78,3 @@ signals:
     void addIp(int, QString);
     void coefChanged(double, double);
 };
-
-#endif // LARCMACS_H

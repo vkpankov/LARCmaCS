@@ -1,5 +1,4 @@
-﻿#ifndef RECIEVER_H
-#define RECIEVER_H
+﻿#pragma once
 
 #include <QObject>
 #include <QThread>
@@ -110,5 +109,3 @@ signals:
     void wstart();
     void wstop();
 };
-
-#endif // RECIEVER_H
