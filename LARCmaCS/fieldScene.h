@@ -1,5 +1,4 @@
-#ifndef FIELDSCENE_H
-#define FIELDSCENE_H
+#pragma once
 
 #include <iostream>
 #include <QGraphicsScene>
@@ -99,4 +98,3 @@ private:
 
 };
 
-#endif // FIELDSCENE_H

@@ -19,8 +19,8 @@
 */
 //========================================================================
 
-#ifndef FIELD_DEFAULT_CONSTANTS_H
-#define FIELD_DEFAULT_CONSTANTS_H
+#pragma once
+
 namespace FieldConstantsRoboCup2009 {
   static const int line_width = 10;
   static const int field_length=6050;
@@ -37,4 +37,3 @@ namespace FieldConstantsRoboCup2009 {
   static const int penalty_spot_from_field_line_dist=450;
   static const int penalty_line_from_spot_dist=400;
 }
-#endif // FIELD_H

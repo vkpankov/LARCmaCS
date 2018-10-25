@@ -1,5 +1,4 @@
-﻿#ifndef MAINALG_H
-#define MAINALG_H
+﻿#pragma once
 
 #include <QObject>
 #include <QThread>
@@ -108,5 +107,3 @@ signals:
 public slots:
 
 };
-
-#endif // MAINALG_H

@@ -1,5 +1,4 @@
-#ifndef SCENEVIEW_H
-#define SCENEVIEW_H
+#pragma once
 
 #include <QObject>
 #include <QThread>
@@ -73,5 +72,3 @@ signals:
     void wstop();
 
 };
-
-#endif // SCENEVIEW_H

@@ -1,5 +1,4 @@
-#ifndef _INCLUDED_NETRAW_H_
-#define _INCLUDED_NETRAW_H_
+#pragma once
 
 #include <winsock2.h>
 #include <ws2tcpip.h>
@@ -85,4 +84,3 @@ public:
 
 }; // namespace Net
 
-#endif

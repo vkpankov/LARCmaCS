@@ -1,5 +1,4 @@
-#ifndef PACKETSSL_H
-#define PACKETSSL_H
+#pragma once
 
 #include <QVector>
 #include <QPoint>
@@ -29,5 +28,3 @@ struct PacketSSL
     double robots_yellow[48];
     double balls[3];
 };
-
-#endif // PACKETSSL_H

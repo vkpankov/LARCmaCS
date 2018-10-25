@@ -1,5 +1,4 @@
-#ifndef IPDIALOG_H
-#define IPDIALOG_H
+#pragma once
 
 #include <QDialog>
 #include "connector.h"
@@ -32,5 +31,3 @@ signals:
     void addIp(int, QString);
 
 };
-
-#endif // IPDIALOG_H

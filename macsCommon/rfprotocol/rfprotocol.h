@@ -1,5 +1,4 @@
-#ifndef RFPROTOCOL_H_
-#define RFPROTOCOL_H_
+#pragma once
 
 #include <iostream>
 #include <string.h>
@@ -12,9 +11,6 @@
 
 #define MAX_DEVICE 12 // max bluetooth devices
 #define NXT_MESS_SIZE 32
-
-// Должно быть так!||||||||||||||
-//                 VVVVVVVVVVVVVV
 
 //using namespace std;
 
@@ -78,5 +74,3 @@
 //	Device			deviceData;
 //	struct timeval	receivedTimestamp;
 //} ExchangePacket;
-
-#endif /* RFPROTOCOL_H_ */
