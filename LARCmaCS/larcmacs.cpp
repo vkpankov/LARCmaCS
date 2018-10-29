@@ -15,7 +15,7 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
 
     fieldscene = new FieldScene();
     ui->fieldView->setScene(fieldscene);
-
+    scaleView(8);
     macsArray = new QString[12];
 
     receiver.init();
