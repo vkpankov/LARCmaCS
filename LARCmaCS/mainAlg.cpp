@@ -8,6 +8,8 @@
 #include <QtWidgets/QApplication>
 using namespace std;
 
+#include "QDebug"
+
 #include "message.h"
 
 int initConfig(RCConfig *config){
@@ -149,6 +151,8 @@ void MainAlgWorker::run_matlab()
     engEvalString(fmldata.ep, sendString);
 //    engEvalString(fmldata.ep, "disp(1)");
 
+    QString dirPath = "cd " + QCoreApplication::applicationDirPath() + "/MLscripts";
+    engEvalString(fmldata.ep, dirPath.toUtf8().data());
     fmtlab = true;
 }
 
@@ -164,7 +168,7 @@ void MainAlgWorker::Pause()
 {
     engEvalString(fmldata.ep, "PAUSE();");
 }
-#include "QDebug"
+
 MainAlgWorker::MainAlgWorker()
 {
         timer_s=0;
