@@ -150,6 +150,7 @@ void MainAlgWorker::run_matlab()
 //    engEvalString(fmldata.ep, "disp(1)");
 
     fmtlab = true;
+    pause = false;
 }
 
 void MainAlgWorker::stop_matlab()
@@ -162,6 +163,14 @@ void MainAlgWorker::EvalString(QString s)
 }
 void MainAlgWorker::Pause()
 {
+    if (!pause)
+    {
+        pause = true;
+    }
+    else
+    {
+        pause = false;
+    }
     engEvalString(fmldata.ep, "PAUSE();");
 }
 #include "QDebug"
@@ -242,7 +251,8 @@ void MainAlgWorker::run(PacketSSL packetssl)
                 emit sendToBTtransmitter(newmessage);
 
             Message msg;
-
+            if (!pause)
+            {
             msg.setKickerChargeEnable(1);
 
             msg.setSpeedX(newmess[2]);
@@ -251,7 +261,17 @@ void MainAlgWorker::run(PacketSSL packetssl)
 
             msg.setKickVoltageLevel(12);
             msg.setKickUp(newmess[4]);
+            }
+            else
+            {
+                msg.setKickerChargeEnable(0);
+                msg.setSpeedX(0);
+                msg.setSpeedY(0);
+                msg.setSpeedR(0);
 
+                msg.setKickVoltageLevel(0);
+                msg.setKickUp(0);
+            }
 //            if (newmess[8]) {
 //                QString stop_sig = "1";
 //                client.writeData(stop_sig.toUtf8());

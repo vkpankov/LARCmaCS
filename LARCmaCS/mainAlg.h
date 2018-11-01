@@ -63,6 +63,7 @@ private:
     MlData fmldata;
     bool fmtlab;
     bool shutdowncomp;
+    bool pause;
 };
 
 struct MainAlg : public QObject
