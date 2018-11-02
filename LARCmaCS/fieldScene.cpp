@@ -305,46 +305,62 @@ void FieldScene::ConstructField()
   field->addText(QPoint(-field_length/(2*ksize)-1400/ksize, field_width/(2*ksize)+200/ksize), qfont , "(" + QString::number(-field_length / 2) + ", " + QString::number(-field_width / 2) + ")");
   field->addText(QPoint(-field_length/(2*ksize)-1300/ksize, -field_width/(2*ksize)-100/ksize), qfont , "(" + QString::number(-field_length / 2) + ", " + QString::number(field_width / 2) + ")");
   field->addText(QPoint(field_length/(2*ksize)+100/ksize, -field_width/(2*ksize)-100/ksize), qfont , "(" + QString::number(field_length / 2) + ", " + QString::number(field_width / 2) + ")");
+  if (field_lines.empty() || field_arcs.empty()) {
+    field->moveTo ( 0,-field_width/(2*ksize) );
+    field->lineTo ( 0,field_width/(2*ksize) );
 
-  field->moveTo ( 0,-field_width/(2*ksize) );
-  field->lineTo ( 0,field_width/(2*ksize) );
-
-  field->addEllipse ( -2*center_circle_radius/(2*ksize),-center_circle_radius/ksize,
+    field->addEllipse ( -2*center_circle_radius/(2*ksize),-center_circle_radius/ksize,
                       4*center_circle_radius/(2*ksize),2*center_circle_radius/ksize );
 
-  field->moveTo ( field_length/(2*ksize),-field_width/(2*ksize) );
-  field->lineTo ( field_length/(2*ksize),field_width/(2*ksize) );
+    field->moveTo ( field_length/(2*ksize),-field_width/(2*ksize) );
+    field->lineTo ( field_length/(2*ksize),field_width/(2*ksize) );
 
-  field->moveTo ( -field_length/(2*ksize),-field_width/(2*ksize) );
-  field->lineTo ( -field_length/(2*ksize),field_width/(2*ksize) );
+    field->moveTo ( -field_length/(2*ksize),-field_width/(2*ksize) );
+    field->lineTo ( -field_length/(2*ksize),field_width/(2*ksize) );
 
-  field->moveTo ( -field_length/(2*ksize),-field_width/(2*ksize) );
-  field->lineTo ( field_length/(2*ksize),-field_width/(2*ksize) );
+    field->moveTo ( -field_length/(2*ksize),-field_width/(2*ksize) );
+    field->lineTo ( field_length/(2*ksize),-field_width/(2*ksize) );
 
-  field->moveTo ( -field_length/(2*ksize),field_width/(2*ksize) );
-  field->lineTo ( field_length/(2*ksize),field_width/(2*ksize) );
+    field->moveTo ( -field_length/(2*ksize),field_width/(2*ksize) );
+    field->lineTo ( field_length/(2*ksize),field_width/(2*ksize) );
 
-  field->moveTo ( field_length/(2*ksize),goal_width/(2*ksize) );
-  field->lineTo ( ( field_length/(2*ksize)+goal_depth/ksize ),goal_width/(2*ksize) );
-  field->lineTo ( ( field_length/(2*ksize)+goal_depth/ksize ),-goal_width/(2*ksize) );
-  field->lineTo ( field_length/(2*ksize),-goal_width/(2*ksize) );
-  field->moveTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
-  field->lineTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
-  field->moveTo((field_length/(2*ksize)), penalty_area_width/(2*ksize));
-  field->lineTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
-  field->moveTo((field_length/(2*ksize)), -penalty_area_width/(2*ksize));
-  field->lineTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
+    field->moveTo ( field_length/(2*ksize),goal_width/(2*ksize) );
+    field->lineTo ( ( field_length/(2*ksize)+goal_depth/ksize ),goal_width/(2*ksize) );
+    field->lineTo ( ( field_length/(2*ksize)+goal_depth/ksize ),-goal_width/(2*ksize) );
+    field->lineTo ( field_length/(2*ksize),-goal_width/(2*ksize) );
+    field->moveTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
+    field->lineTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
+    field->moveTo((field_length/(2*ksize)), penalty_area_width/(2*ksize));
+    field->lineTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
+    field->moveTo((field_length/(2*ksize)), -penalty_area_width/(2*ksize));
+    field->lineTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
 
-  field->moveTo ( -field_length/(2*ksize),goal_width/(2*ksize) );
-  field->lineTo ( - ( field_length/(2*ksize)+goal_depth/ksize ),goal_width/(2*ksize) );
-  field->lineTo ( - ( field_length/(2*ksize)+goal_depth/ksize ),-goal_width/(2*ksize) );
-  field->lineTo ( -field_length/(2*ksize),-goal_width/(2*ksize) );
-  field->moveTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
-  field->lineTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
-  field->moveTo(- (field_length/(2*ksize)), penalty_area_width/(2*ksize));
-  field->lineTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
-  field->moveTo(- (field_length/(2*ksize)), -penalty_area_width/(2*ksize));
-  field->lineTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
+    field->moveTo ( -field_length/(2*ksize),goal_width/(2*ksize) );
+    field->lineTo ( - ( field_length/(2*ksize)+goal_depth/ksize ),goal_width/(2*ksize) );
+    field->lineTo ( - ( field_length/(2*ksize)+goal_depth/ksize ),-goal_width/(2*ksize) );
+    field->lineTo ( -field_length/(2*ksize),-goal_width/(2*ksize) );
+    field->moveTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
+    field->lineTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
+    field->moveTo(- (field_length/(2*ksize)), penalty_area_width/(2*ksize));
+    field->lineTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
+    field->moveTo(- (field_length/(2*ksize)), -penalty_area_width/(2*ksize));
+    field->lineTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
+  } else {
+      for (int i = 0; i < field_lines.size(); i++) {
+          field->moveTo(field_lines[i].p1().x(), field_lines[i].p1().y());
+          field->lineTo(field_lines[i].p2().x(), field_lines[i].p2().y());
+      }
+      for (int i = 0; i < field_arcs.size(); i++) {
+          double tmp;
+          if (field_arcs[i].a2() < field_arcs[i].a1()) {
+              tmp = 360 + field_arcs[i].a2() - field_arcs[i].a1();
+          } else {
+              tmp = field_arcs[i].a2() - field_arcs[i].a1();
+          }
+          field->arcTo(field_arcs[i].center().x(), field_arcs[i].center().y(), field_arcs[i].radius(), field_arcs[i].radius(), field_arcs[i].a1(), tmp);
+      }
+
+  }
 }
 
 void FieldScene::LoadFieldGeometry()
@@ -353,41 +369,41 @@ void FieldScene::LoadFieldGeometry()
   this->field_length = FieldConstantsRoboCup2018A::kFieldLength;
   this->field_width = FieldConstantsRoboCup2018A::kFieldWidth;
   this->boundary_width = FieldConstantsRoboCup2018A::kBoundaryWidth;
-  this->referee_width = FieldConstantsRoboCup2009::referee_width;
   this->goal_width = FieldConstantsRoboCup2018A::kGoalWidth;
   this->goal_depth = FieldConstantsRoboCup2018A::kGoalDepth;
-  this->goal_wall_width = FieldConstantsRoboCup2009::goal_wall_width;
   this->center_circle_radius = FieldConstantsRoboCup2018A::kCenterCircleRadius;
-  this->defense_radius = FieldConstantsRoboCup2009::defense_radius;
-  this->defense_stretch = FieldConstantsRoboCup2009::defense_stretch;
-  this->free_kick_from_defense_dist = FieldConstantsRoboCup2009::free_kick_from_defense_dist;
-  this->penalty_spot_from_field_line_dist = FieldConstantsRoboCup2009::penalty_spot_from_field_line_dist;
-  this->penalty_line_from_spot_dist = FieldConstantsRoboCup2009::penalty_line_from_spot_dist;
   this->penalty_area_depth = FieldConstantsRoboCup2018A::kPenaltyAreaDepth;
   this->penalty_area_width = FieldConstantsRoboCup2018A::kPenaltyAreaWidth;
 }
 
 void FieldScene::LoadFieldGeometry ( SSL_GeometryFieldSize &fieldSize )
 {
-    this->line_width = FieldConstantsRoboCup2018A::kLineThickness;//fieldSize.line_width();
-   // cout << line_width << endln;
+  this->line_width = FieldConstantsRoboCup2018A::kLineThickness;//fieldSize.line_width();
+  field_lines.clear();
+  field_arcs.clear();
+  for (int i = 0; i < fieldSize.field_lines_size(); i++) {
+    field_lines.push_back(fieldSize.field_lines(i));
+  }
+  for (int i = 0; i < fieldSize.field_arcs_size(); i++) {
+    field_arcs.push_back(fieldSize.field_arcs(i));
+  }
+  // cout << line_width << endln;
   this->field_length = fieldSize.field_length();
+<<<<<<< HEAD
   // cout << field_length << endl;
   this->field_width = fieldSize.field_width();
   //cout << field_width << endl;
+=======
+  cout << field_length << endl;
+  this->field_width = fieldSize.field_width();
+  cout << field_width << endl;
+>>>>>>> fully deleted old constants and add new drawing method
   this->boundary_width = fieldSize.boundary_width();
-  this->referee_width = FieldConstantsRoboCup2009::referee_width;//fieldSize.referee_width();
   this->goal_width = fieldSize.goal_width();
   this->goal_depth = fieldSize.goal_depth();
   this->penalty_area_depth = FieldConstantsRoboCup2018A::kPenaltyAreaDepth;
   this->penalty_area_width = FieldConstantsRoboCup2018A::kPenaltyAreaWidth;
-  this->goal_wall_width = FieldConstantsRoboCup2009::goal_wall_width;//fieldSize.goal_wall_width();
   this->center_circle_radius = FieldConstantsRoboCup2018A::kCenterCircleRadius;//fieldSize.center_circle_radius();
-  this->defense_radius = FieldConstantsRoboCup2009::defense_radius;//fieldSize.defense_radius();
-  this->defense_stretch = FieldConstantsRoboCup2009::defense_stretch;//fieldSize.defense_stretch();
-  this->free_kick_from_defense_dist = FieldConstantsRoboCup2009::free_kick_from_defense_dist;//fieldSize.free_kick_from_defense_dist();
-  this->penalty_spot_from_field_line_dist = FieldConstantsRoboCup2009::penalty_spot_from_field_line_dist;//fieldSize.penalty_spot_from_field_line_dist();
-  this->penalty_line_from_spot_dist = FieldConstantsRoboCup2009::penalty_line_from_spot_dist;//fieldSize.penalty_line_from_spot_dist();
 
   this->removeItem ( fieldItem );
   ConstructField();

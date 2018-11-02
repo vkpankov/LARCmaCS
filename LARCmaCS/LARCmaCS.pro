@@ -79,7 +79,6 @@ HEADERS  += \
   $${SHARED_DIR}/net/robocup_ssl_client.h \
   $${SHARED_DIR}/net/Pipe.h \
   $${SHARED_DIR}/util/timer.h \
-  $${SHARED_DIR}/util/field.h \
   $${SHARED_DIR}/util/field_default_constants.h \
   $${SHARED_DIR}/rfprotocol/rfprotocol.h \
         larcmacs.h \
