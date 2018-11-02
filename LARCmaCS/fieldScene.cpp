@@ -367,23 +367,23 @@ void FieldScene::LoadFieldGeometry()
 
 void FieldScene::LoadFieldGeometry ( SSL_GeometryFieldSize &fieldSize )
 {
-  this->line_width = fieldSize.line_width();
-  // cout << line_width << endln;
+  this->line_width = FieldConstantsRoboCup2009::line_width;//fieldSize.line_width();
+   // cout << line_width << endln;
   this->field_length = fieldSize.field_length();
   // cout << field_length << endl;
   this->field_width = fieldSize.field_width();
   //cout << field_width << endl;
   this->boundary_width = fieldSize.boundary_width();
-  this->referee_width = fieldSize.referee_width();
+  this->referee_width = FieldConstantsRoboCup2009::referee_width;//fieldSize.referee_width();
   this->goal_width = fieldSize.goal_width();
   this->goal_depth = fieldSize.goal_depth();
-  this->goal_wall_width = fieldSize.goal_wall_width();
-  this->center_circle_radius = fieldSize.center_circle_radius();
-  this->defense_radius = fieldSize.defense_radius();
-  this->defense_stretch = fieldSize.defense_stretch();
-  this->free_kick_from_defense_dist = fieldSize.free_kick_from_defense_dist();
-  this->penalty_spot_from_field_line_dist = fieldSize.penalty_spot_from_field_line_dist();
-  this->penalty_line_from_spot_dist = fieldSize.penalty_line_from_spot_dist();
+  this->goal_wall_width = FieldConstantsRoboCup2009::goal_wall_width;//fieldSize.goal_wall_width();
+  this->center_circle_radius = FieldConstantsRoboCup2009::center_circle_radius;//fieldSize.center_circle_radius();
+  this->defense_radius = FieldConstantsRoboCup2009::defense_radius;//fieldSize.defense_radius();
+  this->defense_stretch = FieldConstantsRoboCup2009::defense_stretch;//fieldSize.defense_stretch();
+  this->free_kick_from_defense_dist = FieldConstantsRoboCup2009::free_kick_from_defense_dist;//fieldSize.free_kick_from_defense_dist();
+  this->penalty_spot_from_field_line_dist = FieldConstantsRoboCup2009::penalty_spot_from_field_line_dist;//fieldSize.penalty_spot_from_field_line_dist();
+  this->penalty_line_from_spot_dist = FieldConstantsRoboCup2009::penalty_line_from_spot_dist;//fieldSize.penalty_line_from_spot_dist();
 
   this->removeItem ( fieldItem );
   ConstructField();

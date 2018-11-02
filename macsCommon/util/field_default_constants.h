@@ -37,3 +37,18 @@ namespace FieldConstantsRoboCup2009 {
   static const int penalty_spot_from_field_line_dist=450;
   static const int penalty_line_from_spot_dist=400;
 }
+
+namespace FieldConstantsRoboCup2018A {
+    const double kFieldLength = 12000.0;
+    const double kFieldWidth = 9000.0;
+    const double kGoalWidth = 1200.0;
+    const double kGoalDepth = 180.0;
+    const double kBoundaryWidth = 250.0;
+    const double kLineThickness = 10.0;
+    const double kPenaltyAreaDepth = 1200.0;
+    const double kPenaltyAreaWidth = 2400.0;
+    const double kCenterCircleRadius = 500.0;
+    const int kNumCamerasTotal = 8;
+    const int kNumCamerasLocal = 4;
+}
+#endif // FIELD_H

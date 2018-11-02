@@ -25,6 +25,8 @@
 
 #include "VarTypes.h"
 #include <QObject>
+#include <QReadWriteLock>
+
 
 #ifndef NO_PROTOBUFFERS
   #include "messages_robocup_ssl_geometry.pb.h"
@@ -39,6 +41,96 @@ using namespace VarTypes;
 
   \author Stefan Zickler , (C) 2009
 **/
+
+
+class FieldLine : public QObject {
+Q_OBJECT
+protected:
+  FieldLine(VarString* name_,
+            VarDouble* p1_x_,
+            VarDouble* p1_y_,
+            VarDouble* p2_x_,
+            VarDouble* p2_y_,
+            VarDouble* thickness_,
+            VarList* list_);
+private:
+  // Disable assignment operator.
+  const FieldLine& operator=(const FieldLine& other);
+public:
+  VarString* name;
+  VarDouble* p1_x;
+  VarDouble* p1_y;
+  VarDouble* p2_x;
+  VarDouble* p2_y;
+  VarDouble* thickness;
+  VarList* list;
+
+  FieldLine(const FieldLine& other);
+  FieldLine(const std::string& marking_name);
+  FieldLine(const std::string& marking_name,
+              double p1_x_, double p1_y_, double p2_x_, double p2_y_,
+              double thickness_);
+  ~FieldLine();
+
+  // Reads the entries from the specified VarList and attempts to create a
+  // FieldLine object from the entries. If succesful, it returns a valid pointer
+  // to a newly created FieldLine object. If it fails, it returns NULL.
+  static FieldLine* FromVarList(VarList* list);
+
+protected slots:
+  void Rename();
+};
+
+void FieldLine::Rename() {
+  list->setName(name->getString());
+}
+
+class FieldCircularArc : public QObject {
+Q_OBJECT
+protected:
+  FieldCircularArc(VarString* name_,
+                   VarDouble* center_x_,
+                   VarDouble* center_y_,
+                   VarDouble* radius_,
+                   VarDouble* a1_,
+                   VarDouble* a2_,
+                   VarDouble* thickness_,
+                   VarList* list_);
+
+private:
+  // Disable assignment operator.
+  const FieldCircularArc& operator=(const FieldCircularArc& other);
+
+public:
+  VarString* name;
+  VarDouble* center_x;
+  VarDouble* center_y;
+  VarDouble* radius;
+  VarDouble* a1;
+  VarDouble* a2;
+  VarDouble* thickness;
+  VarList* list;
+
+  FieldCircularArc(const FieldCircularArc& other);
+  FieldCircularArc(const std::string& marking_name);
+  FieldCircularArc(const std::string& marking_name,
+              double center_x_, double center_y_, double radius_,
+              double a1_, double a2_, double thickness_);
+  ~FieldCircularArc();
+
+  // Reads the entries from the specified VarList and attempts to create a
+  // FieldCircularArc object from the entries. If succesful, it returns a valid
+  // pointer to a newly created FieldCircularArc object. If it fails, it returns
+  // NULL.
+  static FieldCircularArc* FromVarList(VarList* list);
+
+private slots:
+  void Rename();
+};
+void FieldCircularArc::Rename() {
+  list->setName(name->getString());
+}
+
 class RoboCupField : public QObject
 {
 Q_OBJECT
@@ -67,6 +159,24 @@ public:
   VarInt * penalty_spot_from_field_line_dist;
   VarInt * penalty_line_from_spot_dist;
 
+  mutable QReadWriteLock field_markings_mutex;
+  /*VarDouble* field_length;
+  VarDouble* field_width;
+  VarDouble* goal_width;
+  VarDouble* goal_depth;
+  VarDouble* boundary_width;*/
+  VarDouble* line_thickness;
+  VarDouble* penalty_area_depth;
+  VarDouble* penalty_area_width;
+  VarInt* num_cameras_total;
+  VarInt* num_cameras_local;
+  VarInt* var_num_lines;
+  VarInt* var_num_arcs;
+  VarList* field_lines_list;
+  VarList* field_arcs_list;
+  vector<FieldLine*> field_lines;
+  vector<FieldCircularArc*> field_arcs;
+
   //derived:
   VarInt * field_total_playable_length;
   VarInt * field_total_playable_width;
@@ -83,7 +193,7 @@ public:
   VarInt * half_field_total_surface_width;
 
   #ifndef NO_PROTOBUFFERS
-  void toProtoBuffer(SSL_GeometryFieldSize & buffer) const {
+  /*void toProtoBuffer(SSL_GeometryFieldSize & buffer) const {
     buffer.set_line_width(line_width->getInt());
     buffer.set_field_length(field_length->getInt());
     buffer.set_field_width(field_width->getInt());
@@ -98,9 +208,46 @@ public:
     buffer.set_free_kick_from_defense_dist(free_kick_from_defense_dist->getInt());
     buffer.set_penalty_spot_from_field_line_dist(penalty_spot_from_field_line_dist->getInt());
     buffer.set_penalty_line_from_spot_dist(penalty_line_from_spot_dist->getInt());
+  }*/
+
+
+
+  void toProtoBuffer(SSL_GeometryFieldSize& buffer) const{
+    field_markings_mutex.lockForRead();
+    buffer.Clear();
+    buffer.set_field_length(field_length->getDouble());
+    buffer.set_field_width(field_width->getDouble());
+    buffer.set_goal_width(goal_width->getDouble());
+    buffer.set_goal_depth(goal_depth->getDouble());
+    buffer.set_boundary_width(boundary_width->getDouble());
+    for (size_t i = 0; i < field_lines.size(); ++i) {
+      const FieldLine& line = *(field_lines[i]);
+      SSL_FieldLineSegment proto_line;
+      proto_line.set_name(line.name->getString());
+      proto_line.mutable_p1()->set_x(line.p1_x->getDouble());
+      proto_line.mutable_p1()->set_y(line.p1_y->getDouble());
+      proto_line.mutable_p2()->set_x(line.p2_x->getDouble());
+      proto_line.mutable_p2()->set_y(line.p2_y->getDouble());
+      proto_line.set_thickness(line.thickness->getDouble());
+      *(buffer.add_field_lines()) = proto_line;
+    }
+    for (size_t i = 0; i < field_arcs.size(); ++i) {
+      const FieldCircularArc& arc = *(field_arcs[i]);
+      SSL_FieldCicularArc proto_arc;
+      proto_arc.set_name(arc.name->getString());
+      proto_arc.mutable_center()->set_x(arc.center_x->getDouble());
+      proto_arc.mutable_center()->set_y(arc.center_y->getDouble());
+      proto_arc.set_radius(arc.radius->getDouble());
+      proto_arc.set_a1(arc.a1->getDouble());
+      proto_arc.set_a2(arc.a2->getDouble());
+      proto_arc.set_thickness(arc.thickness->getDouble());
+      *(buffer.add_field_arcs()) = proto_arc;
+    }
+    field_markings_mutex.unlock();
   }
 
-  void fromProtoBuffer(const SSL_GeometryFieldSize & buffer) {
+
+  /*void fromProtoBuffer(const SSL_GeometryFieldSize & buffer) {
     line_width->setInt(buffer.line_width());
     field_length->setInt(buffer.field_length());
     field_width->setInt(buffer.field_width());
@@ -116,7 +263,7 @@ public:
     penalty_spot_from_field_line_dist->setInt(buffer.penalty_spot_from_field_line_dist());
     penalty_line_from_spot_dist->setInt(buffer.penalty_line_from_spot_dist());
     updateDerivedParameters();
-  }
+  }*/
   #endif
 
   void loadDefaultsRoboCup2009() {
