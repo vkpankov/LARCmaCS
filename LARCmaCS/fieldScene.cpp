@@ -328,46 +328,48 @@ void FieldScene::ConstructField()
   field->lineTo ( ( field_length/(2*ksize)+goal_depth/ksize ),goal_width/(2*ksize) );
   field->lineTo ( ( field_length/(2*ksize)+goal_depth/ksize ),-goal_width/(2*ksize) );
   field->lineTo ( field_length/(2*ksize),-goal_width/(2*ksize) );
-  field->moveTo ( ( field_length/(2*ksize)-defense_radius/ksize ),defense_stretch/(2*ksize) );
-  field->lineTo ( ( field_length/(2*ksize)-defense_radius/ksize ),-defense_stretch/(2*ksize) );
-  field->moveTo ( ( field_length/(2*ksize)-defense_radius/ksize ),defense_stretch/(2*ksize) );
-  field->arcTo ( ( field_length/(2*ksize)-defense_radius/ksize ),- ( defense_radius/ksize-defense_stretch/(2*ksize) ),2*defense_radius/ksize,2*defense_radius/ksize,180,90 );
-  field->moveTo ( ( field_length/(2*ksize)-defense_radius/ksize ),-defense_stretch/(2*ksize) );
-  field->arcTo ( ( field_length/(2*ksize)-defense_radius/ksize ),- ( defense_radius/ksize+defense_stretch/(2*ksize) ),2*defense_radius/ksize,2*defense_radius/ksize,180,-90 );
+  field->moveTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
+  field->lineTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
+  field->moveTo((field_length/(2*ksize)), penalty_area_width/(2*ksize));
+  field->lineTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
+  field->moveTo((field_length/(2*ksize)), -penalty_area_width/(2*ksize));
+  field->lineTo (( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
 
   field->moveTo ( -field_length/(2*ksize),goal_width/(2*ksize) );
   field->lineTo ( - ( field_length/(2*ksize)+goal_depth/ksize ),goal_width/(2*ksize) );
   field->lineTo ( - ( field_length/(2*ksize)+goal_depth/ksize ),-goal_width/(2*ksize) );
   field->lineTo ( -field_length/(2*ksize),-goal_width/(2*ksize) );
-  field->moveTo ( - ( field_length/(2*ksize)-defense_radius/ksize ),defense_stretch/(2*ksize) );
-  field->lineTo ( - ( field_length/(2*ksize)-defense_radius/ksize ),-defense_stretch/(2*ksize) );
-  field->moveTo ( - ( field_length/(2*ksize)-defense_radius/ksize ),defense_stretch/(2*ksize) );
-  field->arcTo ( - ( field_length/(2*ksize)+defense_radius/ksize ),- (defense_radius/ksize-defense_stretch/(2*ksize) ),2*defense_radius/ksize,2*defense_radius/ksize,0,-90 );
-  field->moveTo ( - ( field_length/(2*ksize)-defense_radius/ksize ),-defense_stretch/(2*ksize) );
-  field->arcTo ( - ( field_length/(2*ksize)+defense_radius/ksize ),- ( defense_radius/ksize+defense_stretch/(2*ksize) ),2*defense_radius/ksize,2*defense_radius/ksize,0,90 );
+  field->moveTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
+  field->lineTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
+  field->moveTo(- (field_length/(2*ksize)), penalty_area_width/(2*ksize));
+  field->lineTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),penalty_area_width/(2*ksize) );
+  field->moveTo(- (field_length/(2*ksize)), -penalty_area_width/(2*ksize));
+  field->lineTo ( - ( field_length/(2*ksize)-penalty_area_depth/ksize ),-penalty_area_width/(2*ksize) );
 }
 
 void FieldScene::LoadFieldGeometry()
 {
-  this->line_width = FieldConstantsRoboCup2009::line_width;
-  this->field_length = FieldConstantsRoboCup2009::field_length;
-  this->field_width = FieldConstantsRoboCup2009::field_width;
-  this->boundary_width = FieldConstantsRoboCup2009::boundary_width;
+  this->line_width = FieldConstantsRoboCup2018A::kLineThickness;
+  this->field_length = FieldConstantsRoboCup2018A::kFieldLength;
+  this->field_width = FieldConstantsRoboCup2018A::kFieldWidth;
+  this->boundary_width = FieldConstantsRoboCup2018A::kBoundaryWidth;
   this->referee_width = FieldConstantsRoboCup2009::referee_width;
-  this->goal_width = FieldConstantsRoboCup2009::goal_width;
-  this->goal_depth = FieldConstantsRoboCup2009::goal_depth;
+  this->goal_width = FieldConstantsRoboCup2018A::kGoalWidth;
+  this->goal_depth = FieldConstantsRoboCup2018A::kGoalDepth;
   this->goal_wall_width = FieldConstantsRoboCup2009::goal_wall_width;
-  this->center_circle_radius = FieldConstantsRoboCup2009::center_circle_radius;
+  this->center_circle_radius = FieldConstantsRoboCup2018A::kCenterCircleRadius;
   this->defense_radius = FieldConstantsRoboCup2009::defense_radius;
   this->defense_stretch = FieldConstantsRoboCup2009::defense_stretch;
   this->free_kick_from_defense_dist = FieldConstantsRoboCup2009::free_kick_from_defense_dist;
   this->penalty_spot_from_field_line_dist = FieldConstantsRoboCup2009::penalty_spot_from_field_line_dist;
   this->penalty_line_from_spot_dist = FieldConstantsRoboCup2009::penalty_line_from_spot_dist;
+  this->penalty_area_depth = FieldConstantsRoboCup2018A::kPenaltyAreaDepth;
+  this->penalty_area_width = FieldConstantsRoboCup2018A::kPenaltyAreaWidth;
 }
 
 void FieldScene::LoadFieldGeometry ( SSL_GeometryFieldSize &fieldSize )
 {
-  this->line_width = FieldConstantsRoboCup2009::line_width;//fieldSize.line_width();
+    this->line_width = FieldConstantsRoboCup2018A::kLineThickness;//fieldSize.line_width();
    // cout << line_width << endln;
   this->field_length = fieldSize.field_length();
   // cout << field_length << endl;
@@ -377,8 +379,10 @@ void FieldScene::LoadFieldGeometry ( SSL_GeometryFieldSize &fieldSize )
   this->referee_width = FieldConstantsRoboCup2009::referee_width;//fieldSize.referee_width();
   this->goal_width = fieldSize.goal_width();
   this->goal_depth = fieldSize.goal_depth();
+  this->penalty_area_depth = FieldConstantsRoboCup2018A::kPenaltyAreaDepth;
+  this->penalty_area_width = FieldConstantsRoboCup2018A::kPenaltyAreaWidth;
   this->goal_wall_width = FieldConstantsRoboCup2009::goal_wall_width;//fieldSize.goal_wall_width();
-  this->center_circle_radius = FieldConstantsRoboCup2009::center_circle_radius;//fieldSize.center_circle_radius();
+  this->center_circle_radius = FieldConstantsRoboCup2018A::kCenterCircleRadius;//fieldSize.center_circle_radius();
   this->defense_radius = FieldConstantsRoboCup2009::defense_radius;//fieldSize.defense_radius();
   this->defense_stretch = FieldConstantsRoboCup2009::defense_stretch;//fieldSize.defense_stretch();
   this->free_kick_from_defense_dist = FieldConstantsRoboCup2009::free_kick_from_defense_dist;//fieldSize.free_kick_from_defense_dist();

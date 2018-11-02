@@ -94,6 +94,8 @@ private:
     double defense_radius;
     double defense_stretch;
     double free_kick_from_defense_dist;
+    double penalty_area_width;
+    double penalty_area_depth;
     double penalty_spot_from_field_line_dist;
     double penalty_line_from_spot_dist;
 
