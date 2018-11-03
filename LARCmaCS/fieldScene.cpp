@@ -392,11 +392,8 @@ void FieldScene::LoadFieldGeometry ( SSL_GeometryFieldSize &fieldSize )
   for (int i = 0; i < fieldSize.field_arcs_size(); i++) {
     field_arcs.push_back(fieldSize.field_arcs(i));
   }
-  // cout << line_width << endln;
   this->field_length = fieldSize.field_length();
-  // cout << field_length << endl;
   this->field_width = fieldSize.field_width();
-  //cout << field_width << endl;
   this->boundary_width = fieldSize.boundary_width();
   this->goal_width = fieldSize.goal_width();
   this->goal_depth = fieldSize.goal_depth();

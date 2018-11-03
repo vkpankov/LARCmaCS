@@ -26,7 +26,6 @@ DESTDIR = ../bin$${SUFFIX_STR}
 MATLAB_DIR = 'C:/Program Files (x86)/MATLAB/R2013b/extern/'
 # -----------------------------
 
-
 unix {
   DEFINES+=UNIX
   DEFINES+=LINUX
