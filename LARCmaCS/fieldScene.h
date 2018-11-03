@@ -53,6 +53,7 @@ public:
     void AddRobot ( Robot* robot );
     void UpdateRobots ( SSL_DetectionFrame &detection );
     int UpdateBalls ( QVector<QPointF> &_balls, int cameraID );
+    void UpdateField(SSL_GeometryFieldSize field);
 
     void UpdateGeometry(SSL_GeometryFieldSize fieldSize);
     void LoadFieldGeometry();
