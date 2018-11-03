@@ -19,8 +19,8 @@
 */
 //========================================================================
 
-#ifndef FIELD_H
-#define FIELD_H
+#pragma once
+
 #include "field_default_constants.h"
 
 #include "VarTypes.h"
@@ -531,4 +531,3 @@ public:
 };
 
 
-#endif // FIELD_H

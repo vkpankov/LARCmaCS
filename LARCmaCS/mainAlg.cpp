@@ -8,6 +8,8 @@
 #include <QtWidgets/QApplication>
 using namespace std;
 
+#include "QDebug"
+
 #include "message.h"
 
 int initConfig(RCConfig *config){
@@ -149,6 +151,8 @@ void MainAlgWorker::run_matlab()
     engEvalString(fmldata.ep, sendString);
 //    engEvalString(fmldata.ep, "disp(1)");
 
+    QString dirPath = "cd " + QCoreApplication::applicationDirPath() + "/MLscripts";
+    engEvalString(fmldata.ep, dirPath.toUtf8().data());
     fmtlab = true;
 }
 
@@ -164,7 +168,7 @@ void MainAlgWorker::Pause()
 {
     engEvalString(fmldata.ep, "PAUSE();");
 }
-#include "QDebug"
+
 MainAlgWorker::MainAlgWorker()
 {
         timer_s = 0;
@@ -242,22 +246,21 @@ void MainAlgWorker::run(PacketSSL packetssl)
                 emit sendToBTtransmitter(newmessage);
 
             Message msg;
-            int v_l = newmess[2];
-            int v_r = newmess[3];
-            int kick = newmess[4];
 
-            if (newmess[5]) {
-                QString stop_sig = "1";
-                client.writeData(stop_sig.toUtf8());
-            }
-
-            int v = (v_l + v_r) / 2 * mLinearCoef;
-            int omega = (v_l - v_r) * mAngularCoef;
             msg.setKickerChargeEnable(1);
+
+            msg.setSpeedX(newmess[2]);
+            msg.setSpeedY(newmess[3]);
+            msg.setSpeedR(newmess[5]);
+
             msg.setKickVoltageLevel(12);
-            msg.setKickUp(kick);
-            msg.setSpeedY(v);
-            msg.setSpeedR(omega);
+            msg.setKickUp(newmess[4]);
+
+//            if (newmess[8]) {
+//                QString stop_sig = "1";
+//                client.writeData(stop_sig.toUtf8());
+//            }
+
             QByteArray command = msg.generateByteArray();
 
             if (newmess[1]==0)

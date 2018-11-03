@@ -18,8 +18,8 @@
   \author  Stefan Zickler, 2009
 */
 //========================================================================
-#ifndef ROBOCUP_SSL_CLIENT_H
-#define ROBOCUP_SSL_CLIENT_H
+#pragma once
+
 #include "netraw.h"
 #include <string>
 #include <QMutex>
@@ -53,4 +53,3 @@ public:
 
 };
 
-#endif

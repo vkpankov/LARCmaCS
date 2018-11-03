@@ -1,5 +1,4 @@
-#ifndef REMOTECONTROL_H
-#define REMOTECONTROL_H
+#pragma once
 
 #include <QWidget>
 #include <QTimer>
@@ -35,4 +34,3 @@ signals:
     void RC_control(int left,int right,int kick,int beep, bool kickUp);
 };
 
-#endif // REMOTECONTROL_H

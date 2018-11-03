@@ -1,5 +1,4 @@
-#ifndef CONNECTOR_H
-#define CONNECTOR_H
+#pragma once
 
 #include <QObject>
 #include <QFile>
@@ -108,5 +107,3 @@ signals:
     void wstart();
     void wstop();
 };
-
-#endif // CONNECTOR_H
