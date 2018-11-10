@@ -186,7 +186,7 @@ void FieldScene::UpdateRobots ( SSL_DetectionFrame &detection )
     else
       id = NA;
     x = robot.x();
-    y = robot.y();
+    y = -robot.y();
     if ( robot.has_orientation() )
       orientation = robot.orientation() *180.0/M_PI;
     else
@@ -254,7 +254,7 @@ void FieldScene::UpdateRobots ( SSL_DetectionFrame &detection )
   }
   for ( int i=0;i<detection.balls_size();i++ )
   {
-    ballItems[cameraID][i]->setPos ( detection.balls(i).x()/ksize-6,-detection.balls(i).y()/ksize-6 );
+    ballItems[cameraID][i]->setPos ( detection.balls(i).x()/ksize-6,detection.balls(i).y()/ksize-6 );
   }
   return;
 }
@@ -290,7 +290,7 @@ int FieldScene::UpdateBalls ( QVector<QPointF> &_balls, int cameraID )
   for ( int i=0;i<_balls.size();i++ ){
     //Let's update the ball positions now
 //      cout << _balls[i].x()/ksize << " " << _balls[i].y()/ksize << endl;
-    ballItems[cameraID][i]->setPos ( _balls[i].x()/ksize-6,-_balls[i].y()/ksize-6 );
+    ballItems[cameraID][i]->setPos ( _balls[i].x()/ksize-6,_balls[i].y()/ksize-6 );
   }
 
   int balls = ballItems[cameraID].size();
