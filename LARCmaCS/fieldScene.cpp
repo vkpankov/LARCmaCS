@@ -77,14 +77,14 @@ void Robot::paint ( QPainter *painter, const QStyleOptionGraphicsItem* , QWidget
 {
   if ( conf==0.0 )
     return;
-  painter->translate ( x,-y );
+  painter->translate ( x, y );
   painter->setPen ( *pen );
   painter->setBrush ( *brush );
   if ( fabs ( orientation ) <360 )
   {
-    painter->rotate ( -45-orientation );
+    painter->rotate ( -45+orientation );
     painter->drawPath ( robotOutline );
-    painter->rotate ( 45+orientation );
+    painter->rotate ( 45-orientation );
   }
   else
     painter->drawPath ( robotOutlineCircle );
@@ -202,7 +202,7 @@ void FieldScene::UpdateRobots ( SSL_DetectionFrame &detection )
 
     //cout << i << " " << id << " " << x << " " << y << " " << orientation << " " << conf << endl;
 
-    robots[j]->SetPose ( x,y,orientation,conf );
+    robots[j]->SetPose ( x, -y,orientation,conf );
     QString label;
 
     if ( id!=NA )
