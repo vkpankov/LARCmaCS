@@ -60,11 +60,7 @@ private slots:
     void remcontrolsender(int l, int r,int k, int b, bool kickUp);
 
     void on_checkBox_MlMaxFreq_stateChanged(int arg1);
-
     void on_pushButton_RemoteControl_clicked();
-
-    //void on_coefButton_clicked();
-
     void on_pushButton_SetupIP_clicked();
 
 signals:
