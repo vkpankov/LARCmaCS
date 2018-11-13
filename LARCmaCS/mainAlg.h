@@ -20,8 +20,6 @@ struct MainAlgWorker : public QObject
     clock_t timer,timer_s,timer_m,timer_max;
     int Time_count;
     bool Send2BT[MAX_NUM_ROBOTS];
-    double mLinearCoef;
-    double mAngularCoef;
     Client client;
 
 public:
@@ -34,12 +32,6 @@ signals:
     void StatusMessage(QString message);
     void UpdatePauseState(QString message);
 public slots:
-
-    void changeCoef(double linearCoef, double angularCoef) {
-        mLinearCoef = linearCoef;
-        mAngularCoef = angularCoef;
-        qDebug() << "Coefficients changed to" << mLinearCoef << mAngularCoef;
-    }
 
     void start()
     {

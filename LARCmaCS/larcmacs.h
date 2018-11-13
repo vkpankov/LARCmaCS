@@ -63,7 +63,7 @@ private slots:
 
     void on_pushButton_RemoteControl_clicked();
 
-    void on_coefButton_clicked();
+    //void on_coefButton_clicked();
 
     void on_pushButton_SetupIP_clicked();
 
@@ -76,5 +76,4 @@ signals:
     void updateRobots();
     void openPort(QString);
     void addIp(int, QString);
-    void coefChanged(double, double);
 };

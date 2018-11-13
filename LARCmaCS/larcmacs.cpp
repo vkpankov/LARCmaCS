@@ -44,7 +44,6 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     //send command to robots
 //    connect(this,SIGNAL(receiveMacArray(QString*)),&connector.worker,SLOT(receiveMacArray(QString*)));
     connect(&mainalg.worker, SIGNAL(sendToConnector(int,QByteArray)), &connector.worker, SLOT(run(int,QByteArray)));
-    connect(this, SIGNAL(coefChanged(double, double)), &mainalg.worker, SLOT(changeCoef(double, double)));
 
     //gui connector
     connect(&sceneview.worker, SIGNAL(updateView()), this, SLOT(updateView()));
@@ -284,16 +283,6 @@ void LARCmaCS::on_pushButton_RemoteControl_clicked()
     remotecontol.hide();
     remotecontol.show();
     remotecontol.TimerStart();
-}
-
-
-
-void LARCmaCS::on_coefButton_clicked()
-{
-    double linearCoef = ui->linearSpeed->text().toDouble();
-    double angularCoef = ui->angularSpeed->text().toDouble();
-
-    emit coefChanged(linearCoef, angularCoef);
 }
 
 void LARCmaCS::on_pushButton_SetupIP_clicked()
