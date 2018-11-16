@@ -292,3 +292,10 @@ void LARCmaCS::on_pushButton_SetupIP_clicked()
     ipDialog->open();
     qDebug() << connector.worker.numIP;
 }
+
+
+void LARCmaCS::on_but_reference_clicked()
+{
+    Reference *refWindow = new Reference();
+    refWindow->show();
+}

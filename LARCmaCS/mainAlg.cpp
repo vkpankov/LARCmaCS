@@ -3,7 +3,6 @@
 #include <fstream>
 //#include <TCHAR.H>
 #include <windows.h>
-//#include <process.h>
 
 #include <QtWidgets/QApplication>
 using namespace std;
@@ -163,14 +162,7 @@ void MainAlgWorker::EvalString(QString s)
 }
 void MainAlgWorker::Pause()
 {
-    if (!pause)
-    {
-        pause = true;
-    }
-    else
-    {
-        pause = false;
-    }
+    if (pause = !pause) {}
     engEvalString(fmldata.ep, "PAUSE();");
 }
 #include "QDebug"
@@ -249,8 +241,8 @@ void MainAlgWorker::run(PacketSSL packetssl)
                 emit sendToBTtransmitter(newmessage);
 
             Message msg;
-            if (!pause)
-            {
+
+            if (pause) {
             msg.setKickerChargeEnable(1);
 
             msg.setSpeedX(newmess[2]);
@@ -259,9 +251,7 @@ void MainAlgWorker::run(PacketSSL packetssl)
 
             msg.setKickVoltageLevel(12);
             msg.setKickUp(newmess[4]);
-            }
-            else
-            {
+            } else {
                 msg.setKickerChargeEnable(0);
                 msg.setSpeedX(0);
                 msg.setSpeedY(0);
@@ -274,6 +264,7 @@ void MainAlgWorker::run(PacketSSL packetssl)
 //                QString stop_sig = "1";
 //                client.writeData(stop_sig.toUtf8());
 //            }
+
 
             QByteArray command = msg.generateByteArray();
 
