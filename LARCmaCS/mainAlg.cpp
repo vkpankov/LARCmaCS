@@ -171,9 +171,9 @@ void MainAlgWorker::Pause()
 
 MainAlgWorker::MainAlgWorker()
 {
-        timer_s = 0;
-        timer_m = clock();
-        Time_count = 0;
+        timer_s=0;
+        timer_m=clock();
+        Time_count=0;
         mLinearCoef = 0.5;
         mAngularCoef = 0.3;
         QFile addrFile("gamepads.txt");
@@ -205,7 +205,7 @@ void MainAlgWorker::run(PacketSSL packetssl)
     timer = clock();
     Time_count++;
 
-// Заполнение массивов Balls, Blues и Yellows и запуск main-функции (send to MATLAB)
+// Заполнение массивов Balls Blues и Yellows и запуск main-функции
 
     memcpy(mxGetPr(fmldata.Ball), packetssl.balls, BALL_COUNT_d);
     memcpy(mxGetPr(fmldata.Blue), packetssl.robots_blue, TEAM_COUNT_d);
