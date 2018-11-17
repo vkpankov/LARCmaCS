@@ -21,6 +21,7 @@ struct MainAlgWorker : public QObject
     int Time_count;
     bool Send2BT[MAX_NUM_ROBOTS];
     Client client;
+    bool isPause;
 
 public:
     MainAlgWorker();
@@ -31,6 +32,7 @@ signals:
     void mainAlgFree();
     void StatusMessage(QString message);
     void UpdatePauseState(QString message);
+
 public slots:
 
     void start()
@@ -39,6 +41,7 @@ public slots:
         cout << "MainAlg worker start" << endl;
         init();
     }
+
     void Send2BTChangeit(bool *send2BT_);
 
     void stop() { shutdowncomp = true; }
