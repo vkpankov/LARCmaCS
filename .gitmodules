@@ -1,3 +1,6 @@
 [submodule "MLScripts/MLscripts"]
 	path = MLScripts/MLscripts
 	url = https://github.com/robocup-ssl-russia/MLscripts.git
+[submodule "larcmacs-protobuf"]
+	path = larcmacs-protobuf
+	url = https://github.com/robocup-ssl-russia/larcmacs-protobuf
