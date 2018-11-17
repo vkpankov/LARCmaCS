@@ -255,6 +255,10 @@ void FieldScene::UpdateRobots ( SSL_DetectionFrame &detection )
   return;
 }
 
+void FieldScene::UpdateGeometry(SSL_GeometryFieldSize fieldSize) {
+    LoadFieldGeometry(fieldSize);
+}
+
 int FieldScene::UpdateBalls ( QVector<QPointF> &_balls, int cameraID )
 {
   QVector<QGraphicsEllipseItem*> tmp;
@@ -357,11 +361,11 @@ void FieldScene::LoadFieldGeometry()
 void FieldScene::LoadFieldGeometry ( SSL_GeometryFieldSize &fieldSize )
 {
   this->line_width = fieldSize.line_width();
-   // cout << line_width << endln;
+  // cout << line_width << endln;
   this->field_length = fieldSize.field_length();
-     cout << field_length << endl;
+  // cout << field_length << endl;
   this->field_width = fieldSize.field_width();
-     cout << field_width << endl;
+  //cout << field_width << endl;
   this->boundary_width = fieldSize.boundary_width();
   this->referee_width = fieldSize.referee_width();
   this->goal_width = fieldSize.goal_width();
