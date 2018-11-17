@@ -2,6 +2,7 @@
 #include "larcmacs.h"
 #include "ui_larcmacs.h"
 #include "packetSSL.h"
+#include <fstream>
 
 
 LARCmaCS::LARCmaCS(QWidget *parent) :
@@ -12,7 +13,7 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     drawscale(1)
 {
     ui->setupUi(this);
-
+    algoDir = "";
     fieldscene = new FieldScene();
     ui->fieldView->setScene(fieldscene);
     scaleView(8);
@@ -35,7 +36,7 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
 
     //algorithm connect
     connect(this, SIGNAL(MLEvalString(QString)),&mainalg.worker,SLOT(EvalString(QString)));
-    connect(this, SIGNAL(MatlabPause()), &mainalg.worker, SLOT(Pause()));
+    //connect(this, SIGNAL(MatlabPause()), &mainalg.worker, SLOT(Pause()));
     connect(&receiver.worker, SIGNAL(activateMA(PacketSSL)), &mainalg.worker, SLOT(run(PacketSSL)));
     connect(&mainalg.worker, SIGNAL(mainAlgFree()), &receiver.worker, SLOT(MainAlgFree()));
     //reciever
@@ -260,17 +261,82 @@ void LARCmaCS::updateView()
 
 }
 
-void LARCmaCS::on_pushButton_Pause_clicked()
+//void LARCmaCS::on_pushButton_Pause_clicked()
+//{
+//    emit MatlabPause();
+//}
+
+void LARCmaCS::on_pushButton_GenerateAlgo_clicked()
 {
-    emit MatlabPause();
+    QString algoName = ui->algoChoice->currentText();
+    QString numberOfRobot = ui->inputForAlgoGeneration->text();
+    if (ui->inputForAlgoGenerationPoint->text().split(",").size() < 2) {
+        cout << "not a point\n";
+        return;
+    }
+    QString Gx = ui->inputForAlgoGenerationPoint->text().split(",")[0];
+    QString Gy = ui->inputForAlgoGenerationPoint->text().split(",")[1];
+    if (numberOfRobot.size() == 0 || (numberOfRobot.size() > 0 && !numberOfRobot.at(0).isDigit()))
+    {
+        cout << "Not number!!!\n";
+        return;
+    }
+    if (algoDir == "") {
+        cout << "MATLAB dir isn't set";
+        return;
+    }
+    QFile fileIn("../mainBase.txt");
+    QFile fileOut(algoDir + "/main.m");
+
+    if (!fileIn.open(QIODevice::ReadOnly) || !fileOut.open(QIODevice::WriteOnly|QIODevice::Text))
+    {
+        cout << "File not open!!\n";
+    }
+    else
+    {
+        QTextStream out(&fileOut);
+        QString str;
+        QTextStream Qcout(stdout);
+        while (str != "%% CONTRIL BLOCK\r\n")
+        {
+            str = fileIn.readLine();
+            out << str;
+        }
+        str = "RP.Blue(" + numberOfRobot + ").Nrul = " + numberOfRobot + ";";
+        out << str << endl;
+        switch (algoName.at(0).toLatin1())
+        {
+            case 'G':
+                str = "RP.Blue(" + numberOfRobot + ").rul = GoalKeeper(RP.Blue(" + numberOfRobot + "), RP.Ball, [" + Gx + ", " + Gy + "], [1, 0]);";
+                break;
+            case 'A':
+                str = "RP.Blue(" + numberOfRobot + ").rul = Attacker(RP.Blue(" + numberOfRobot + "), RP.Ball, [" + Gx + ", " + Gy + "]);";
+                break;
+            case 'M':
+                str = "RP.Blue(" + numberOfRobot + ").rul = MoveToLinear(RP.Blue(" + numberOfRobot + "), [" + Gx + ", " + Gy + "], 3/750, 20, 50);";
+                break;
+            case 'R':
+                str = "RP.Blue(" + numberOfRobot + ").rul = RotateToLinear(RP.Blue(" + numberOfRobot + "), [" + Gx + ", " + Gy + "], 5, 15, 1/20);";
+                break;
+        }
+        out << str << endl;
+        while (!str.isEmpty())
+        {
+            str = fileIn.readLine();
+            out << str;
+        }
+        fileIn.close();
+        fileOut.close();
+    }
 }
 
 #include <QFileDialog>
 void LARCmaCS::on_pushButton_SetMLdir_clicked()
 {
     QString  dir = QFileDialog::getExistingDirectory();
-    QString  s="cd "+dir;
-    qDebug()<<"New Matlab directory = "<<s;
+    QString  s = "cd "+ dir;
+    algoDir = dir;
+    qDebug() << "New Matlab directory = " << s;
     emit MLEvalString(s);
 }
 

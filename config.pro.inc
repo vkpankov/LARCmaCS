@@ -23,7 +23,7 @@ DESTDIR = ../bin$${SUFFIX_STR}
 
 # ----------PERSONAL-----------
 #MATLAB_DIR = d:/Work)/MATLAB/R2012b_x86/extern/
-MATLAB_DIR = 'C:/MATLAB/R2013b/extern/'
+MATLAB_DIR = 'C:/Program Files (x86)/MATLAB/R2013b/extern/'
 # -----------------------------
 
 
