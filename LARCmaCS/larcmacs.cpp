@@ -285,7 +285,7 @@ void LARCmaCS::on_pushButton_GenerateAlgo_clicked()
         cout << "MATLAB dir isn't set";
         return;
     }
-    QFile fileIn("../mainBase.txt");
+    QFile fileIn("../bin/mainBase.txt");
     QFile fileOut(algoDir + "/main.m");
 
     if (!fileIn.open(QIODevice::ReadOnly) || !fileOut.open(QIODevice::WriteOnly|QIODevice::Text))
@@ -313,10 +313,10 @@ void LARCmaCS::on_pushButton_GenerateAlgo_clicked()
                 str = "RP.Blue(" + numberOfRobot + ").rul = Attacker(RP.Blue(" + numberOfRobot + "), RP.Ball, [" + Gx + ", " + Gy + "]);";
                 break;
             case 'M':
-                str = "RP.Blue(" + numberOfRobot + ").rul = MoveToLinear(RP.Blue(" + numberOfRobot + "), [" + Gx + ", " + Gy + "], 3/750, 20, 50);";
+                str = "RP.Blue(" + numberOfRobot + ").rul = MoveToLinear(RP.Blue(" + numberOfRobot + "), [" + Gx + ", " + Gy + "], 2/750, 15, 50);";
                 break;
             case 'R':
-                str = "RP.Blue(" + numberOfRobot + ").rul = RotateToLinear(RP.Blue(" + numberOfRobot + "), [" + Gx + ", " + Gy + "], 5, 15, 1/20);";
+                str = "RP.Blue(" + numberOfRobot + ").rul = RotateToLinear(RP.Blue(" + numberOfRobot + "), [" + Gx + ", " + Gy + "], 5, 20, 1/10);";
                 break;
         }
         out << str << endl;
