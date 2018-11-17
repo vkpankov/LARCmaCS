@@ -23,6 +23,7 @@ struct MainAlgWorker : public QObject
     double mLinearCoef;
     double mAngularCoef;
     Client client;
+    bool isPause;
 
 public:
     MainAlgWorker();
@@ -33,6 +34,7 @@ signals:
     void mainAlgFree();
     void StatusMessage(QString message);
     void UpdatePauseState(QString message);
+
 public slots:
 
     void changeCoef(double linearCoef, double angularCoef) {
@@ -47,6 +49,7 @@ public slots:
         cout << "MainAlg worker start" << endl;
         init();
     }
+
     void Send2BTChangeit(bool *send2BT_);
 
     void stop() { shutdowncomp = true; }
