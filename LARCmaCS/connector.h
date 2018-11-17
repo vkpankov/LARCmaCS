@@ -55,6 +55,7 @@ signals:
     void sendMacs(QList<QString>);
     void sendPortList(QStringList);
 
+
 public slots:
     void init();
 

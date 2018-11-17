@@ -1,9 +1,8 @@
-﻿#include "mainAlg.h"
+#include "mainAlg.h"
 #include <iostream>
 #include <fstream>
 //#include <TCHAR.H>
 #include <windows.h>
-//#include <process.h>
 
 #include <QtWidgets/QApplication>
 using namespace std;
@@ -154,6 +153,7 @@ void MainAlgWorker::run_matlab()
     QString dirPath = "cd " + QCoreApplication::applicationDirPath() + "/MLscripts";
     engEvalString(fmldata.ep, dirPath.toUtf8().data());
     fmtlab = true;
+    pause = false;
 }
 
 void MainAlgWorker::stop_matlab()
@@ -166,6 +166,7 @@ void MainAlgWorker::EvalString(QString s)
 }
 void MainAlgWorker::Pause()
 {
+    if (pause = !pause) {}
     engEvalString(fmldata.ep, "PAUSE();");
 }
 
@@ -174,8 +175,6 @@ MainAlgWorker::MainAlgWorker()
         timer_s=0;
         timer_m=clock();
         Time_count=0;
-        mLinearCoef = 0.5;
-        mAngularCoef = 0.3;
         QFile addrFile("gamepads.txt");
         if (!addrFile.open(QIODevice::ReadOnly)) {
             qDebug() << "File with addresses is not opened!!!";
@@ -246,20 +245,28 @@ void MainAlgWorker::run(PacketSSL packetssl)
                 emit sendToBTtransmitter(newmessage);
 
             Message msg;
-
+            msg.setKickVoltageLevel(12);
             msg.setKickerChargeEnable(1);
 
-            msg.setSpeedX(newmess[2]);
-            msg.setSpeedY(newmess[3]);
-            msg.setSpeedR(newmess[5]);
-
-            msg.setKickVoltageLevel(12);
-            msg.setKickUp(newmess[4]);
-
+            if (!isPause) {
+                msg.setSpeedX(newmess[2]);
+                msg.setSpeedY(newmess[3]);
+                msg.setSpeedR(newmess[5]);
+              
+                msg.setKickForward(newmess[4]);
+            } else {
+                msg.setSpeedX(0);
+                msg.setSpeedY(0);
+                msg.setSpeedR(0);
+              
+                msg.setKickForward(0);
+            }
+          
 //            if (newmess[8]) {
 //                QString stop_sig = "1";
 //                client.writeData(stop_sig.toUtf8());
 //            }
+
 
             QByteArray command = msg.generateByteArray();
 
@@ -304,6 +311,7 @@ void MainAlgWorker::run(PacketSSL packetssl)
 
         engEvalString(fmldata.ep,"ispause=RP.Pause");
         mxArray *mxitpause=engGetVariable(fmldata.ep,"ispause");
+        isPause = true;
         if (mxitpause!=0)
         {
             double *itpause=mxGetPr(mxitpause);
@@ -319,7 +327,10 @@ void MainAlgWorker::run(PacketSSL packetssl)
                         {
                             if ((*zMain_End)==0)
                                 emit UpdatePauseState("main br");
-                            else emit UpdatePauseState("WORK");
+                            else {
+                                emit UpdatePauseState("WORK");
+                                isPause = false;
+                            }
                         }
                         else emit UpdatePauseState("-err-z");
                     }
@@ -330,6 +341,23 @@ void MainAlgWorker::run(PacketSSL packetssl)
             else emit UpdatePauseState("-err-p"); //Ответ от матлаба повреждён
         }
         else emit UpdatePauseState("-err-mp"); //Нет ответа от матлаб
+    }
+
+    if (isPause) {
+        Message msg;
+        msg.setKickVoltageLevel(12);
+        msg.setKickerChargeEnable(1);
+
+        msg.setSpeedX(0);
+        msg.setSpeedY(0);
+        msg.setSpeedR(0);
+
+        msg.setKickForward(0);
+
+        QByteArray command = msg.generateByteArray();
+        for (int i = 1; i <= 12; i++) {
+            emit sendToConnector(i, command);
+        }
     }
 
 // Сообщение ресиверу о готовности обработки нового пакета.
