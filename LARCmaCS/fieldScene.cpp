@@ -299,6 +299,13 @@ void FieldScene::ConstructField()
    //scene->removeItem(fieldItem);
   field = new QPainterPath();
 
+  QFont qfont;
+  qfont.setPixelSize(20);
+  field->addText(QPoint(field_length/(2*ksize) + 100 / ksize, field_width/(2*ksize)+200/ksize), qfont , "(" + QString::number(field_length / 2) + ", " + QString::number(-field_width / 2) + ")");
+  field->addText(QPoint(-field_length/(2*ksize)-1400/ksize, field_width/(2*ksize)+200/ksize), qfont , "(" + QString::number(-field_length / 2) + ", " + QString::number(-field_width / 2) + ")");
+  field->addText(QPoint(-field_length/(2*ksize)-1300/ksize, -field_width/(2*ksize)-100/ksize), qfont , "(" + QString::number(-field_length / 2) + ", " + QString::number(field_width / 2) + ")");
+  field->addText(QPoint(field_length/(2*ksize)+100/ksize, -field_width/(2*ksize)-100/ksize), qfont , "(" + QString::number(field_length / 2) + ", " + QString::number(field_width / 2) + ")");
+
   field->moveTo ( 0,-field_width/(2*ksize) );
   field->lineTo ( 0,field_width/(2*ksize) );
 

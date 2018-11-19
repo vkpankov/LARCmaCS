@@ -46,7 +46,7 @@ public slots:
 
     void stop() { shutdowncomp = true; }
     void run(PacketSSL packetssl);
-    void Pause();
+    //void Pause();
     void run_matlab();
     void stop_matlab();    
     void EvalString(QString s);
