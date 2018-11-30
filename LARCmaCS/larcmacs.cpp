@@ -199,20 +199,11 @@ void LARCmaCS::fieldsceneUpdateRobots()
     emit updateRobots();
 }
 
-<<<<<<< HEAD
-void LARCmaCS::fieldsceneUpdateGeometry()
-{
-    fieldscene->UpdateGeometry(receiver.worker.geometry);
-    emit updateGeometry();
-}
-
-=======
 void LARCmaCS::fieldsceneUpdateField()
 {
     fieldscene->UpdateField(receiver.worker.fieldsize);
     emit updateRobots();
 }
->>>>>>> fixed field redrawing
 
 LARCmaCS::~LARCmaCS()
 {

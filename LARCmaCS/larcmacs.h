@@ -54,7 +54,6 @@ private slots:
     void UpdateStatusBar(QString message);
     void UpdatePauseState(QString message);
     void updateView();
-    void fieldsceneUpdateGeometry();
     void scaleView(int);
 
 private slots:
