@@ -34,7 +34,7 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
 
     //algorithm connect
     connect(this, SIGNAL(MLEvalString(QString)),&mainalg.worker,SLOT(EvalString(QString)));
-    connect(this, SIGNAL(MatlabPause()), &mainalg.worker, SLOT(Pause()));
+    //connect(this, SIGNAL(MatlabPause()), &mainalg.worker, SLOT(Pause()));
     connect(&receiver.worker, SIGNAL(activateMA(PacketSSL)), &mainalg.worker, SLOT(run(PacketSSL)));
     connect(&mainalg.worker, SIGNAL(mainAlgFree()), &receiver.worker, SLOT(MainAlgFree()));
     //reciever
@@ -258,10 +258,10 @@ void LARCmaCS::updateView()
 
 }
 
-void LARCmaCS::on_pushButton_Pause_clicked()
-{
-    emit MatlabPause();
-}
+//void LARCmaCS::on_pushButton_Pause_clicked()
+//{
+//    emit MatlabPause();
+//}
 
 #include <QFileDialog>
 void LARCmaCS::on_pushButton_SetMLdir_clicked()

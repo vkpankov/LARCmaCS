@@ -303,19 +303,18 @@ void FieldScene::ConstructField()
 
    //scene->removeItem(fieldItem);
   field = new QPainterPath();
-  //fieldLinePen->setColor(Qt::black);
   QFont qfont;
   qfont.setPixelSize(20);
   field->addText(QPoint(field_length/(2*ksize) + 100 / ksize, field_width/(2*ksize)+200/ksize), qfont , "(" + QString::number(field_length / 2) + ", " + QString::number(-field_width / 2) + ")");
   field->addText(QPoint(-field_length/(2*ksize)-1400/ksize, field_width/(2*ksize)+200/ksize), qfont , "(" + QString::number(-field_length / 2) + ", " + QString::number(-field_width / 2) + ")");
   field->addText(QPoint(-field_length/(2*ksize)-1300/ksize, -field_width/(2*ksize)-100/ksize), qfont , "(" + QString::number(-field_length / 2) + ", " + QString::number(field_width / 2) + ")");
   field->addText(QPoint(field_length/(2*ksize)+100/ksize, -field_width/(2*ksize)-100/ksize), qfont , "(" + QString::number(field_length / 2) + ", " + QString::number(field_width / 2) + ")");
+
   if (field_lines.empty() || field_arcs.empty()) {
     field->moveTo ( 0,-field_width/(2*ksize) );
     field->lineTo ( 0,field_width/(2*ksize) );
 
-    field->addEllipse ( -2*center_circle_radius/(2*ksize),-center_circle_radius/ksize,
-                      4*center_circle_radius/(2*ksize),2*center_circle_radius/ksize );
+    field->addEllipse ( -2*center_circle_radius/(2*ksize),-center_circle_radius/ksize, 4*center_circle_radius/(2*ksize),2*center_circle_radius/ksize );
 
     field->moveTo ( field_length/(2*ksize),-field_width/(2*ksize) );
     field->lineTo ( field_length/(2*ksize),field_width/(2*ksize) );
