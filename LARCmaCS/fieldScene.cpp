@@ -3,6 +3,7 @@
 #include <QStyleOptionGraphicsItem>
 #define _USE_MATH_DEFINES
 #include <math.h>
+#include <QTextStream>
 
 Robot::Robot()
 {
@@ -296,7 +297,7 @@ int FieldScene::UpdateBalls ( QVector<QPointF> &_balls, int cameraID )
   int balls = ballItems[cameraID].size();
   return balls;
 }
-#include <QTextStream>
+
 void FieldScene::ConstructField()
 {
 
@@ -364,7 +365,6 @@ void FieldScene::ConstructField()
           field->moveTo(field_arcs[i].center().x() / ksize + field_arcs[i].radius() / ksize, field_arcs[i].center().y() / ksize);
           field->arcTo(field_arcs[i].center().x() / ksize - field_arcs[i].radius() / ksize, field_arcs[i].center().y() / ksize - field_arcs[i].radius() / ksize, 2 * field_arcs[i].radius() / ksize, 2 * field_arcs[i].radius() / ksize, field_arcs[i].a1(), tmp/0.0175);
       }
-
   }
 }
 

@@ -139,6 +139,13 @@
        <property name="spacing">
         <number>2</number>
        </property>
+	   <item row="3" column="0">
+        <widget class="QPushButton" name="pushButton_Pause">
+         <property name="text">
+          <string>Matlab_Pause</string>
+         </property>
+        </widget>
+       </item>
        <item row="0" column="0" rowspan="3">
         <widget class="QPushButton" name="pushButton_SetMLdir">
          <property name="text">

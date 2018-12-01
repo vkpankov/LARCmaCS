@@ -164,11 +164,11 @@ void MainAlgWorker::EvalString(QString s)
 {
     engEvalString(fmldata.ep,s.toUtf8().data());
 }
-//void MainAlgWorker::Pause()
-//{
-//    if (pause = !pause) {}
-//    engEvalString(fmldata.ep, "PAUSE();");
-//}
+void MainAlgWorker::Pause()
+{
+    if (pause = !pause) {}
+    engEvalString(fmldata.ep, "PAUSE();");
+}
 
 MainAlgWorker::MainAlgWorker()
 {

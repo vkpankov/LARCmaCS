@@ -56,7 +56,7 @@ private slots:
     void scaleView(int);
 
 private slots:
-    //void on_pushButton_Pause_clicked();
+    void on_pushButton_Pause_clicked();
     void on_pushButton_SetMLdir_clicked();
     void on_pushButton_RC_clicked();
     void remcontrolsender(int l, int r,int k, int b, bool kickUp);
@@ -71,7 +71,7 @@ signals:
     void sendToConnectorRM(int N,QByteArray command);
     void receiveMacArray(QString*);
     void ChangeMaxPacketFrequencyMod(bool state);
-    //void MatlabPause();
+    void MatlabPause();
     void MLEvalString(QString s);
     void updateRobots();
     void openPort(QString);
