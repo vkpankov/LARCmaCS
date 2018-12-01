@@ -42,7 +42,6 @@ protected:
 private:
     Ui::LARCmaCS *ui;
     float drawscale;
-    QString algoDir;
     qreal sizescene;
     QString wifiaddrdata[NUM_CONTROL_ROBOTS];
     QUdpSocket socket;

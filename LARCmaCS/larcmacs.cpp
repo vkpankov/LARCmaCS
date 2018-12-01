@@ -2,7 +2,6 @@
 #include "larcmacs.h"
 #include "ui_larcmacs.h"
 #include "packetSSL.h"
-#include <fstream>
 
 
 LARCmaCS::LARCmaCS(QWidget *parent) :
@@ -13,7 +12,6 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     drawscale(1)
 {
     ui->setupUi(this);
-    algoDir = "";
     fieldscene = new FieldScene();
     ui->fieldView->setScene(fieldscene);
     scaleView(8);
@@ -270,7 +268,6 @@ void LARCmaCS::on_pushButton_SetMLdir_clicked()
 {
     QString  dir = QFileDialog::getExistingDirectory();
     QString  s = "cd "+ dir;
-    algoDir = dir;
     qDebug() << "New Matlab directory = " << s;
     emit MLEvalString(s);
 }
