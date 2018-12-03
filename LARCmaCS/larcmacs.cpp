@@ -12,7 +12,6 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
     drawscale(1)
 {
     ui->setupUi(this);
-
     fieldscene = new FieldScene();
     ui->fieldView->setScene(fieldscene);
     scaleView(8);
@@ -65,7 +64,7 @@ LARCmaCS::LARCmaCS(QWidget *parent) :
 
     //fieldScene Update
     connect(&receiver.worker,SIGNAL(activateGUI()),this,SLOT(fieldsceneUpdateRobots()));
-    connect(&receiver.worker, SIGNAL(updatefieldGeometry()), this, SLOT(fieldsceneUpdateGeometry()));
+    connect(&receiver.worker, SIGNAL(updateField()), this, SLOT (fieldsceneUpdateField()));
     connect(this,SIGNAL(updateRobots()),fieldscene,SLOT(update()));
     connect(this, SIGNAL(updateGeometry()),fieldscene,SLOT(update()));
     //    connect(&receiver.worker, SIGNAL(activateGUI(PacketSSL)), &sceneview.worker, SLOT(repaintScene(PacketSSL)));
@@ -198,12 +197,11 @@ void LARCmaCS::fieldsceneUpdateRobots()
     emit updateRobots();
 }
 
-void LARCmaCS::fieldsceneUpdateGeometry()
+void LARCmaCS::fieldsceneUpdateField()
 {
-    fieldscene->UpdateGeometry(receiver.worker.geometry);
-    emit updateGeometry();
+    fieldscene->UpdateField(receiver.worker.fieldsize);
+    emit updateRobots();
 }
-
 
 LARCmaCS::~LARCmaCS()
 {
@@ -269,8 +267,8 @@ void LARCmaCS::updateView()
 void LARCmaCS::on_pushButton_SetMLdir_clicked()
 {
     QString  dir = QFileDialog::getExistingDirectory();
-    QString  s="cd "+dir;
-    qDebug()<<"New Matlab directory = "<<s;
+    QString  s = "cd "+ dir;
+    qDebug() << "New Matlab directory = " << s;
     emit MLEvalString(s);
 }
 

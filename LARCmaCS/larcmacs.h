@@ -48,11 +48,11 @@ private:
 
 private slots:
     void fieldsceneUpdateRobots();
+    void fieldsceneUpdateField();
     void UpdateSSLFPS(QString message);
     void UpdateStatusBar(QString message);
     void UpdatePauseState(QString message);
     void updateView();
-    void fieldsceneUpdateGeometry();
     void scaleView(int);
 
 private slots:

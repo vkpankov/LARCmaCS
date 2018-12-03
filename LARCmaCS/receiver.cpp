@@ -26,16 +26,14 @@ void ReceiverWorker::run()
 
     while (!shutdownread) {
         if (client.receive(packet)) {
-            if (packet.has_geometry()) {
-                geometry = packet.geometry().field();
-                emit updatefieldGeometry();
-                emit activateGUI();
-            }
-            if (packet.has_detection()) {
+            if (packet.has_geometry())
+            {
+                fieldsize = packet.geometry().field();
+                emit updateField();
+            } else if (packet.has_detection()) {
                 Time_count++;
                 packetsNum++;
-                //cout << "Num RECEIVER:" << packetsNum << endl;
-
+            //cout << "Num RECEIVER:" << packetsNum << endl;
 
                 qRegisterMetaType<PacketSSL>("PacketSSL"); // for queueing arguments between threads
 
@@ -44,7 +42,7 @@ void ReceiverWorker::run()
                 idCam = detection.camera_id() + 1;
                 balls_n = detection.balls_size();
 
-                // [Start] Ball info
+            // [Start] Ball info
                 if (balls_n != 0) {
                     packetssl.balls[0] = idCam;
                     ball = detection.balls(0);
@@ -98,27 +96,26 @@ void ReceiverWorker::run()
                         emit activateGUI();
                 }
             }
+            else
+            {
+                // no messages...
+                Sleep(1);
+            }
+            if (clock()-timer_m>CLOCKS_PER_SEC)
+            {
+                timer_m=clock();
+                QString temp;
+                QString ToStatus="FPS=";
+                temp.setNum(Time_count);
+                ToStatus=ToStatus+temp;
+                ToStatus=ToStatus+"; Count=";
+                temp.setNum(packetsNum);
+                ToStatus=ToStatus+temp;
+                Time_count=0;
+                emit UpdateSSLFPS(ToStatus);
+            }
+            QApplication::processEvents();
         }
-        else           
-        {
-            // no messages...
-            Sleep(1);
-        }
-
-        if (clock()-timer_m>CLOCKS_PER_SEC)
-        {
-            timer_m=clock();
-            QString temp;
-            QString ToStatus="FPS=";
-            temp.setNum(Time_count);
-            ToStatus=ToStatus+temp;
-            ToStatus=ToStatus+"; Count=";
-            temp.setNum(packetsNum);
-            ToStatus=ToStatus+temp;
-            Time_count=0;
-            emit UpdateSSLFPS(ToStatus);
-        }
-        QApplication::processEvents();
     }
 
     client.close();
