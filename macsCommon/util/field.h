@@ -25,6 +25,8 @@
 
 #include "VarTypes.h"
 #include <QObject>
+#include <QReadWriteLock>
+
 
 #ifndef NO_PROTOBUFFERS
   #include "messages_robocup_ssl_geometry.pb.h"
@@ -39,6 +41,96 @@ using namespace VarTypes;
 
   \author Stefan Zickler , (C) 2009
 **/
+
+
+class FieldLine : public QObject {
+Q_OBJECT
+protected:
+  FieldLine(VarString* name_,
+            VarDouble* p1_x_,
+            VarDouble* p1_y_,
+            VarDouble* p2_x_,
+            VarDouble* p2_y_,
+            VarDouble* thickness_,
+            VarList* list_);
+private:
+  // Disable assignment operator.
+  const FieldLine& operator=(const FieldLine& other);
+public:
+  VarString* name;
+  VarDouble* p1_x;
+  VarDouble* p1_y;
+  VarDouble* p2_x;
+  VarDouble* p2_y;
+  VarDouble* thickness;
+  VarList* list;
+
+  FieldLine(const FieldLine& other);
+  FieldLine(const std::string& marking_name);
+  FieldLine(const std::string& marking_name,
+              double p1_x_, double p1_y_, double p2_x_, double p2_y_,
+              double thickness_);
+  ~FieldLine();
+
+  // Reads the entries from the specified VarList and attempts to create a
+  // FieldLine object from the entries. If succesful, it returns a valid pointer
+  // to a newly created FieldLine object. If it fails, it returns NULL.
+  static FieldLine* FromVarList(VarList* list);
+
+protected slots:
+  void Rename();
+};
+
+void FieldLine::Rename() {
+  list->setName(name->getString());
+}
+
+class FieldCircularArc : public QObject {
+Q_OBJECT
+protected:
+  FieldCircularArc(VarString* name_,
+                   VarDouble* center_x_,
+                   VarDouble* center_y_,
+                   VarDouble* radius_,
+                   VarDouble* a1_,
+                   VarDouble* a2_,
+                   VarDouble* thickness_,
+                   VarList* list_);
+
+private:
+  // Disable assignment operator.
+  const FieldCircularArc& operator=(const FieldCircularArc& other);
+
+public:
+  VarString* name;
+  VarDouble* center_x;
+  VarDouble* center_y;
+  VarDouble* radius;
+  VarDouble* a1;
+  VarDouble* a2;
+  VarDouble* thickness;
+  VarList* list;
+
+  FieldCircularArc(const FieldCircularArc& other);
+  FieldCircularArc(const std::string& marking_name);
+  FieldCircularArc(const std::string& marking_name,
+              double center_x_, double center_y_, double radius_,
+              double a1_, double a2_, double thickness_);
+  ~FieldCircularArc();
+
+  // Reads the entries from the specified VarList and attempts to create a
+  // FieldCircularArc object from the entries. If succesful, it returns a valid
+  // pointer to a newly created FieldCircularArc object. If it fails, it returns
+  // NULL.
+  static FieldCircularArc* FromVarList(VarList* list);
+
+private slots:
+  void Rename();
+};
+void FieldCircularArc::Rename() {
+  list->setName(name->getString());
+}
+
 class RoboCupField : public QObject
 {
 Q_OBJECT
@@ -53,12 +145,12 @@ public:
     return settings;
   }
   VarInt * line_width;
-  VarInt * field_length;
+  /*VarInt * field_length;
   VarInt * field_width;
-  VarInt * boundary_width;
-  VarInt * referee_width;
+  VarInt * boundary_width;*/
+  VarInt * referee_width;/*
   VarInt * goal_width;
-  VarInt * goal_depth;
+  VarInt * goal_depth;*/
   VarInt * goal_wall_width;
   VarInt * center_circle_radius;
   VarInt * defense_radius;
@@ -66,6 +158,24 @@ public:
   VarInt * free_kick_from_defense_dist;
   VarInt * penalty_spot_from_field_line_dist;
   VarInt * penalty_line_from_spot_dist;
+
+  mutable QReadWriteLock field_markings_mutex;
+  VarDouble* field_length;
+  VarDouble* field_width;
+  VarDouble* goal_width;
+  VarDouble* goal_depth;
+  VarDouble* boundary_width;
+  VarDouble* line_thickness;
+  VarDouble* penalty_area_depth;
+  VarDouble* penalty_area_width;
+  VarInt* num_cameras_total;
+  VarInt* num_cameras_local;
+  VarInt* var_num_lines;
+  VarInt* var_num_arcs;
+  VarList* field_lines_list;
+  VarList* field_arcs_list;
+  vector<FieldLine*> field_lines;
+  vector<FieldCircularArc*> field_arcs;
 
   //derived:
   VarInt * field_total_playable_length;
@@ -83,7 +193,7 @@ public:
   VarInt * half_field_total_surface_width;
 
   #ifndef NO_PROTOBUFFERS
-  void toProtoBuffer(SSL_GeometryFieldSize & buffer) const {
+  /*void toProtoBuffer(SSL_GeometryFieldSize & buffer) const {
     buffer.set_line_width(line_width->getInt());
     buffer.set_field_length(field_length->getInt());
     buffer.set_field_width(field_width->getInt());
@@ -98,9 +208,46 @@ public:
     buffer.set_free_kick_from_defense_dist(free_kick_from_defense_dist->getInt());
     buffer.set_penalty_spot_from_field_line_dist(penalty_spot_from_field_line_dist->getInt());
     buffer.set_penalty_line_from_spot_dist(penalty_line_from_spot_dist->getInt());
+  }*/
+
+
+
+  void toProtoBuffer(SSL_GeometryFieldSize& buffer) const{
+    field_markings_mutex.lockForRead();
+    buffer.Clear();
+    buffer.set_field_length(field_length->getDouble());
+    buffer.set_field_width(field_width->getDouble());
+    buffer.set_goal_width(goal_width->getDouble());
+    buffer.set_goal_depth(goal_depth->getDouble());
+    buffer.set_boundary_width(boundary_width->getDouble());
+    for (size_t i = 0; i < field_lines.size(); ++i) {
+      const FieldLine& line = *(field_lines[i]);
+      SSL_FieldLineSegment proto_line;
+      proto_line.set_name(line.name->getString());
+      proto_line.mutable_p1()->set_x(line.p1_x->getDouble());
+      proto_line.mutable_p1()->set_y(line.p1_y->getDouble());
+      proto_line.mutable_p2()->set_x(line.p2_x->getDouble());
+      proto_line.mutable_p2()->set_y(line.p2_y->getDouble());
+      proto_line.set_thickness(line.thickness->getDouble());
+      *(buffer.add_field_lines()) = proto_line;
+    }
+    for (size_t i = 0; i < field_arcs.size(); ++i) {
+      const FieldCircularArc& arc = *(field_arcs[i]);
+      SSL_FieldCicularArc proto_arc;
+      proto_arc.set_name(arc.name->getString());
+      proto_arc.mutable_center()->set_x(arc.center_x->getDouble());
+      proto_arc.mutable_center()->set_y(arc.center_y->getDouble());
+      proto_arc.set_radius(arc.radius->getDouble());
+      proto_arc.set_a1(arc.a1->getDouble());
+      proto_arc.set_a2(arc.a2->getDouble());
+      proto_arc.set_thickness(arc.thickness->getDouble());
+      *(buffer.add_field_arcs()) = proto_arc;
+    }
+    field_markings_mutex.unlock();
   }
 
-  void fromProtoBuffer(const SSL_GeometryFieldSize & buffer) {
+
+  /*void fromProtoBuffer(const SSL_GeometryFieldSize & buffer) {
     line_width->setInt(buffer.line_width());
     field_length->setInt(buffer.field_length());
     field_width->setInt(buffer.field_width());
@@ -116,24 +263,28 @@ public:
     penalty_spot_from_field_line_dist->setInt(buffer.penalty_spot_from_field_line_dist());
     penalty_line_from_spot_dist->setInt(buffer.penalty_line_from_spot_dist());
     updateDerivedParameters();
-  }
+  }*/
   #endif
 
   void loadDefaultsRoboCup2009() {
-    line_width->setInt(FieldConstantsRoboCup2009::line_width);
-    field_length->setInt(FieldConstantsRoboCup2009::field_length);
-    field_width->setInt(FieldConstantsRoboCup2009::field_width);
-    boundary_width->setInt(FieldConstantsRoboCup2009::boundary_width);
+    line_width->setDouble(FieldConstantsRoboCup2018A::kLineThickness);
+    penalty_area_depth->setDouble(FieldConstantsRoboCup2018A::kPenaltyAreaDepth);
+    penalty_area_width->setDouble(FieldConstantsRoboCup2018A::kPenaltyAreaWidth);
+    field_length->setDouble(FieldConstantsRoboCup2018A::kFieldLength);
+    field_width->setDouble(FieldConstantsRoboCup2018A::kFieldWidth);
+    boundary_width->setDouble(FieldConstantsRoboCup2018A::kBoundaryWidth);
     referee_width->setInt(FieldConstantsRoboCup2009::referee_width);
-    goal_width->setInt(FieldConstantsRoboCup2009::goal_width);
-    goal_depth->setInt(FieldConstantsRoboCup2009::goal_depth);
+    goal_width->setDouble(FieldConstantsRoboCup2018A::kGoalWidth);
+    goal_depth->setDouble(FieldConstantsRoboCup2018A::kGoalDepth);
     goal_wall_width->setInt(FieldConstantsRoboCup2009::goal_wall_width);
-    center_circle_radius->setInt(FieldConstantsRoboCup2009::center_circle_radius);
+    center_circle_radius->setDouble(FieldConstantsRoboCup2018A::kCenterCircleRadius);
     defense_radius->setInt(FieldConstantsRoboCup2009::defense_radius);
     defense_stretch->setInt(FieldConstantsRoboCup2009::defense_stretch);
     free_kick_from_defense_dist->setInt(FieldConstantsRoboCup2009::free_kick_from_defense_dist);
     penalty_spot_from_field_line_dist->setInt(FieldConstantsRoboCup2009::penalty_spot_from_field_line_dist);
     penalty_line_from_spot_dist->setInt(FieldConstantsRoboCup2009::penalty_line_from_spot_dist);
+    penalty_area_depth->setDouble(FieldConstantsRoboCup2018A::kPenaltyAreaDepth);
+    penalty_area_width->setDouble(FieldConstantsRoboCup2018A::kPenaltyAreaWidth);
     updateDerivedParameters();
   }
   void updateDerivedParameters() {
@@ -156,59 +307,61 @@ public:
   {
     settings = new VarList("Field Configuration");
     settings->addChild(restore = new VarTrigger("Reset SSL 2009","Reset SSL 2009"));
-    
+
     connect(restore,SIGNAL(wasEdited(VarType*)),this,SLOT(restoreRoboCup()));
     //regulation-based symmetric field:
     field_params.push_back(line_width             = new VarInt("Line Width"));
-   
-    field_params.push_back(field_length           = new VarInt("Field Length")); //including lines (outside to outside)
-    field_params.push_back(field_width            = new VarInt("Field Height")); //including lines (outside to outside)
-    
-    field_params.push_back(boundary_width         = new VarInt("Boundary Width")); //width of the boundary
+
+    field_params.push_back(field_length           = new VarDouble("Field Length")); //including lines (outside to outside)
+    field_params.push_back(field_width            = new VarDouble("Field Height")); //including lines (outside to outside)
+
+    field_params.push_back(boundary_width         = new VarDouble("Boundary Width")); //width of the boundary
     field_params.push_back(referee_width          = new VarInt("Referee Width")); //width of the ref-walking area
-    
-    field_params.push_back(goal_width             = new VarInt("Goal Width")); //inside width of the goal
-    field_params.push_back(goal_depth             = new VarInt("Goal Depth")); //inside depth of the goal
+
+    field_params.push_back(goal_width             = new VarDouble("Goal Width")); //inside width of the goal
+    field_params.push_back(goal_depth             = new VarDouble("Goal Depth")); //inside depth of the goal
     field_params.push_back(goal_wall_width        = new VarInt("Goal Wall Width")); //goal wall thickness
-    
+
     field_params.push_back(center_circle_radius   = new VarInt("Center Radius")); //radius of defense quarter circles
-    
+
     field_params.push_back(defense_radius         = new VarInt("Defense Radius")); //radius of defense quarter circles
-    
+
     //total length of the line connecting the two quarter circles of the defense area:
-    field_params.push_back(defense_stretch        = new VarInt("Defense Stretch")); 
-    
+    field_params.push_back(defense_stretch        = new VarInt("Defense Stretch"));
+
     //distance that freekickers have to be from the defense line:
-    field_params.push_back(free_kick_from_defense_dist = new VarInt("Freekick Defense Dist")); 
-    
+    field_params.push_back(free_kick_from_defense_dist = new VarInt("Freekick Defense Dist"));
+
     //distance of the penalty spot's center from the outside of the field line
-    field_params.push_back(penalty_spot_from_field_line_dist = new VarInt("Penalty Spot Dist")); 
-    
+    field_params.push_back(penalty_spot_from_field_line_dist = new VarInt("Penalty Spot Dist"));
+
     //distance between the penalty spot and the line where all other robots must be behind during penalty
-    field_params.push_back(penalty_line_from_spot_dist = new VarInt("Penalty Line From Spot Dist")); 
-    
+    field_params.push_back(penalty_line_from_spot_dist = new VarInt("Penalty Line From Spot Dist"));
+    field_params.push_back(penalty_area_depth = new VarDouble("Penalty area depth"));
+    field_params.push_back(penalty_area_width = new VarDouble("Penalty are width"));
+
     //---------------------------------------------------------------
     //auto-derived variables:
     //---------------------------------------------------------------
-    
+
     //total length of field (including boundary, BUT NOT INCLUDING REFEREE WALKING AREA)
-    derived_params.push_back(field_total_playable_length        = new VarInt("Total Playable Length")); 
-    derived_params.push_back(field_total_playable_width         = new VarInt("Total Playable Width")); 
-    
+    derived_params.push_back(field_total_playable_length        = new VarInt("Total Playable Length"));
+    derived_params.push_back(field_total_playable_width         = new VarInt("Total Playable Width"));
+
     //total length from the outer walls (including playable boundary and referee walking area):
-    derived_params.push_back(field_total_surface_length         = new VarInt("Total Surface Length")); 
-    derived_params.push_back(field_total_surface_width          = new VarInt("Total Surface Width")); 
-    
+    derived_params.push_back(field_total_surface_length         = new VarInt("Total Surface Length"));
+    derived_params.push_back(field_total_surface_width          = new VarInt("Total Surface Width"));
+
     derived_params.push_back(half_field_length                  = new VarInt("Half Field Length"));
     derived_params.push_back(half_field_width                   = new VarInt("Half Field Width"));
     derived_params.push_back(half_line_width                    = new VarInt("Half Line Width"));
     derived_params.push_back(half_goal_width                    = new VarInt("Half Goal Width"));
-    derived_params.push_back(half_defense_stretch               = new VarInt("Half Defense Stretch")); 
-    derived_params.push_back(half_field_total_playable_length   = new VarInt("Half Total Playable Length")); 
-    derived_params.push_back(half_field_total_playable_width    = new VarInt("Half Total Playable Width")); 
-    derived_params.push_back(half_field_total_surface_length    = new VarInt("Half Total Surface Length")); 
-    derived_params.push_back(half_field_total_surface_width     = new VarInt("Half Total Surface Width")); 
-    
+    derived_params.push_back(half_defense_stretch               = new VarInt("Half Defense Stretch"));
+    derived_params.push_back(half_field_total_playable_length   = new VarInt("Half Total Playable Length"));
+    derived_params.push_back(half_field_total_playable_width    = new VarInt("Half Total Playable Width"));
+    derived_params.push_back(half_field_total_surface_length    = new VarInt("Half Total Surface Length"));
+    derived_params.push_back(half_field_total_surface_width     = new VarInt("Half Total Surface Width"));
+
     for (unsigned int i=0;i<field_params.size();i++) {
       connect(field_params[i],SIGNAL(hasChanged(VarType *)),this,SLOT(changed()));
       settings->addChild(field_params[i]);
@@ -217,14 +370,14 @@ public:
       derived_params[i]->addFlags( VARTYPE_FLAG_READONLY );
       settings->addChild(derived_params[i]);
     }
-    
+
     loadDefaultsRoboCup2009();
     emit calibrationChanged();
     //setup the derived parameters to auto-update when the non-derived parameters change.
-    
-    
+
+
   }
-  
+
   ~RoboCupField() {
     field_params.clear();
     derived_params.clear();
@@ -256,7 +409,7 @@ public:
     delete half_field_total_playable_width;
     delete half_field_total_surface_length;
     delete half_field_total_surface_width;
-    
+
     delete restore;
     delete settings;
   }
@@ -273,261 +426,4 @@ protected slots:
     loadDefaultsRoboCup2009();
   }
 };
-    
-/*!
-  \class Field
-
-  \brief Definition of point coordinates (in mm) defining one half of the field
-
-  \author Tim Laue , (C) 2009
-**/    
-
-class RoboCupCalibrationHalfField : public QObject
-{
-Q_OBJECT
-public:
-  enum CameraPositionEnum {
-    CAM_POS_HALF_NEG_X,
-    CAM_POS_HALF_POS_X,
-    CAM_POS_ENUM_COUNT
-  };
-  static CameraPositionEnum stringToCameraPositionEnum(const string & input) {
-     if (input.compare("Half (Negative X)")==0) {
-       return CAM_POS_HALF_NEG_X;
-     } else if (input.compare("Half (Positive X)")==0) {
-       return CAM_POS_HALF_POS_X;
-     } else {
-       return CAM_POS_HALF_NEG_X;
-     }
-  }
-  static string cameraPositionEnumToString(const CameraPositionEnum & input) {
-     if (input==CAM_POS_HALF_NEG_X) {
-       return ("Half (Negative X)");
-     } else if (input==CAM_POS_HALF_POS_X) {
-       return ("Half (Positive X)");
-     } else {
-       return ("");
-     }
-  }
-protected slots:
-  void globalCalibrationChanged() {
-    update();
-  }
-  void autoUpdateChanged() {
-    if (auto_update->getBool()==true) {
-      //disable all items
-      for (unsigned int i = 0; i < params.size(); i++) {
-        params[i]->addFlags(VARTYPE_FLAG_READONLY|VARTYPE_FLAG_NOLOAD);
-      }
-      camera_pos->removeFlags(VARTYPE_FLAG_READONLY);
-      update();
-    } else {
-      //enable all items
-      for (unsigned int i = 0; i < params.size(); i++) {
-        params[i]->removeFlags(VARTYPE_FLAG_READONLY|VARTYPE_FLAG_NOLOAD);
-      }
-      camera_pos->addFlags(VARTYPE_FLAG_READONLY);
-    }
-  }
-protected:
-  RoboCupField * robocup_field;
-  vector<VarType *> params;
-  VarBool * auto_update;
-  VarStringEnum * camera_pos;
-public:
-  RoboCupCalibrationHalfField(RoboCupField * _robocup_field = 0, int cam_id=0) {
-    robocup_field=_robocup_field;
-    if (robocup_field!=0) {
-      connect(robocup_field,SIGNAL(calibrationChanged()),this,SLOT(globalCalibrationChanged()));
-    }
-    auto_update = new VarBool("Auto-Copy from Global Field Config",true);
-    useFeaturesOnCenterCircle = new VarBool("Use features on center circle",true);
-    useFeaturesInDefenseArea = new VarBool("Use features in defense area",true);
-    useFeaturesInGoal = new VarBool("Use features between goal posts ",true);
-    camera_pos = new VarStringEnum("Camera Position",(cam_id==0) ? cameraPositionEnumToString(CAM_POS_HALF_NEG_X) : cameraPositionEnumToString(CAM_POS_HALF_POS_X));
-    camera_pos->addFlags(VARTYPE_FLAG_NOLOAD_ENUM_CHILDREN);
-    for (int i=0;i<CAM_POS_ENUM_COUNT;i++) {
-      camera_pos->addItem(cameraPositionEnumToString((CameraPositionEnum)i));
-    }
-
-    params.push_back(left_corner_x = new VarInt("left corner x", 3025));
-    params.push_back(left_corner_y = new VarInt("left corner y", 2025));
-    params.push_back(left_goal_area_x = new VarInt("left goal area x", 3025)); 
-    params.push_back(left_goal_area_y = new VarInt("left goal area y", 675)); 
-    params.push_back(left_goal_post_x = new VarInt("left post area x", 3025)); 
-    params.push_back(left_goal_post_y = new VarInt("left post area y", 350)); 
-    params.push_back(right_goal_post_x = new VarInt("right post area x", 3025)); 
-    params.push_back(right_goal_post_y = new VarInt("right post area y", -350)); 
-    params.push_back(right_goal_area_x = new VarInt("right goal area x", 3025)); 
-    params.push_back(right_goal_area_y = new VarInt("right goal area y", -675)); 
-    params.push_back(right_corner_x = new VarInt("right corner x", 3025));
-    params.push_back(right_corner_y = new VarInt("right corner y", -2025));
-    params.push_back(left_centerline_x = new VarInt("left centerline x", 0));
-    params.push_back(left_centerline_y = new VarInt("left centerline y", 2025));
-    params.push_back(left_centercircle_x = new VarInt("left centercircle x", 0)); 
-    params.push_back(left_centercircle_y = new VarInt("left centercircle y", 500)); 
-    params.push_back(centerpoint_x = new VarInt("centercircle x", 0)); 
-    params.push_back(centerpoint_y = new VarInt("centercircle y", 0)); 
-    params.push_back(right_centercircle_x = new VarInt("right centercircle x", 0)); 
-    params.push_back(right_centercircle_y = new VarInt("right centercircle y", -500)); 
-    params.push_back(right_centerline_x = new VarInt("right centerline x", 0));
-    params.push_back(right_centerline_y = new VarInt("right centerline y", -2025));
-    params.push_back(centercircle_radius = new VarInt("centercircle radius",500));
-    params.push_back(defense_area_radius = new VarInt("defense area radius",500));
-    params.push_back(defense_stretch = new VarInt("defense stretch",350));
-    
-    
-    connect(auto_update,SIGNAL(hasChanged(VarType *)),this,SLOT(autoUpdateChanged()));
-    connect(camera_pos,SIGNAL(hasChanged(VarType *)),this,SLOT(globalCalibrationChanged()));
-
-    autoUpdateChanged();
-    update();
-  }
-
-  bool isCamPosHalfNegX() const { return (stringToCameraPositionEnum(camera_pos->getSelection()) == CAM_POS_HALF_NEG_X); }
-
-  void update() {
-    if (auto_update->getBool() == true && robocup_field!=0) copyFromRoboCupField(robocup_field,stringToCameraPositionEnum(camera_pos->getSelection()));
-  }
-
-  void copyFromRoboCupField(RoboCupField * field, CameraPositionEnum pos) {
-    int mult_x=1;
-    int mult_y=1;
-    if (pos==CAM_POS_HALF_NEG_X) {
-      mult_x=-1;
-      mult_y=-1;
-    } else if (pos==CAM_POS_HALF_POS_X) {
-      //mult_y=-1;
-    }
-    left_corner_x->setInt(mult_x*(field->half_field_length->getInt()));
-    left_corner_y->setInt(mult_y*(field->half_field_width->getInt()));
-    left_goal_area_x->setInt(mult_x*(field->half_field_length->getInt()));
-    left_goal_area_y->setInt(mult_y*(field->defense_radius->getInt()+field->half_defense_stretch->getInt()));
-    left_goal_post_x->setInt(mult_x*(field->half_field_length->getInt()));
-    left_goal_post_y->setInt(mult_y*(field->half_goal_width->getInt()));
-
-    right_corner_x->setInt(left_corner_x->getInt());
-    right_corner_y->setInt(-left_corner_y->getInt());
-    right_goal_area_x->setInt(left_goal_area_x->getInt());
-    right_goal_area_y->setInt(-left_goal_area_y->getInt());
-    right_goal_post_x->setInt(left_goal_post_x->getInt());
-    right_goal_post_y->setInt(-left_goal_post_y->getInt());
-
-    left_centerline_x->setInt(0); 
-    left_centerline_y->setInt(left_corner_y->getInt());
-    left_centercircle_x->setInt(0);
-    left_centercircle_y->setInt(mult_y*(field->center_circle_radius->getInt()));
-
-    right_centerline_x->setInt(0);
-    right_centerline_y->setInt(-left_centerline_y->getInt());
-    right_centercircle_x->setInt(0);
-    right_centercircle_y->setInt(-left_centercircle_y->getInt());
-
-    centerpoint_x->setInt(0);
-    centerpoint_y->setInt(0);
-    
-    centercircle_radius->setInt(field->center_circle_radius->getInt());
-    defense_area_radius->setInt(field->defense_radius->getInt());
-    defense_stretch->setInt(field->defense_stretch->getInt());
-  }
-
-  ~RoboCupCalibrationHalfField()
-  {
-    params.clear();
-    delete auto_update;
-    delete useFeaturesOnCenterCircle;
-    delete useFeaturesInDefenseArea;
-    delete useFeaturesInGoal;
-    delete camera_pos;
-    delete left_corner_x;
-    delete left_corner_y;
-    delete left_goal_area_x; 
-    delete left_goal_area_y; 
-    delete left_goal_post_x; 
-    delete left_goal_post_y; 
-    delete right_goal_post_x; 
-    delete right_goal_post_y; 
-    delete right_goal_area_x; 
-    delete right_goal_area_y; 
-    delete right_corner_x;
-    delete right_corner_y;
-    delete left_centerline_x;
-    delete left_centerline_y;
-    delete left_centercircle_x;
-    delete left_centercircle_y; 
-    delete centerpoint_x; 
-    delete centerpoint_y; 
-    delete right_centercircle_x; 
-    delete right_centercircle_y; 
-    delete right_centerline_x;
-    delete right_centerline_y;
-    delete centercircle_radius;
-    delete defense_area_radius;
-    delete defense_stretch;
-  }
-  
-  void addSettingsToList(VarList& list) 
-  {
-    list.addChild(auto_update);
-    list.addChild(camera_pos);
-    list.addChild(useFeaturesOnCenterCircle);
-    list.addChild(useFeaturesInDefenseArea);
-    list.addChild(useFeaturesInGoal);
-    list.addChild(left_corner_x);
-    list.addChild(left_corner_y);
-    list.addChild(left_goal_area_x); 
-    list.addChild(left_goal_area_y); 
-    list.addChild(left_goal_post_x); 
-    list.addChild(left_goal_post_y); 
-    list.addChild(right_goal_post_x); 
-    list.addChild(right_goal_post_y); 
-    list.addChild(right_goal_area_x); 
-    list.addChild(right_goal_area_y); 
-    list.addChild(right_corner_x);
-    list.addChild(right_corner_y);
-    list.addChild(left_centerline_x);
-    list.addChild(left_centerline_y);
-    list.addChild(left_centercircle_x); 
-    list.addChild(left_centercircle_y); 
-    list.addChild(centerpoint_x); 
-    list.addChild(centerpoint_y); 
-    list.addChild(right_centercircle_x); 
-    list.addChild(right_centercircle_y); 
-    list.addChild(right_centerline_x);
-    list.addChild(right_centerline_y);
-    list.addChild(centercircle_radius);
-    list.addChild(defense_area_radius);
-    list.addChild(defense_stretch);
-  }
-  
-  VarBool* useFeaturesOnCenterCircle;
-  VarBool* useFeaturesInDefenseArea;
-  VarBool* useFeaturesInGoal;
-  VarInt* left_corner_x;
-  VarInt* left_corner_y;
-  VarInt* left_goal_area_x; 
-  VarInt* left_goal_area_y; 
-  VarInt* left_goal_post_x; 
-  VarInt* left_goal_post_y; 
-  VarInt* right_goal_post_x; 
-  VarInt* right_goal_post_y; 
-  VarInt* right_goal_area_x; 
-  VarInt* right_goal_area_y; 
-  VarInt* right_corner_x;
-  VarInt* right_corner_y;
-  VarInt* left_centerline_x;
-  VarInt* left_centerline_y;
-  VarInt* left_centercircle_x; 
-  VarInt* left_centercircle_y; 
-  VarInt* centerpoint_x; 
-  VarInt* centerpoint_y; 
-  VarInt* right_centercircle_x; 
-  VarInt* right_centercircle_y; 
-  VarInt* right_centerline_x;
-  VarInt* right_centerline_y;
-  VarInt* centercircle_radius;
-  VarInt* defense_area_radius;
-  VarInt* defense_stretch;
-};
-
 

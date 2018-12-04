@@ -51,9 +51,10 @@ public slots:
     }
 public:
     SSL_DetectionFrame detection;
-    SSL_GeometryFieldSize geometry;
+    SSL_GeometryFieldSize fieldsize;
 signals:
     void activateGUI();
+    void updateField();
     void activateMA(PacketSSL packetssl);
     void updatefieldGeometry();
     void UpdateSSLFPS(QString message);

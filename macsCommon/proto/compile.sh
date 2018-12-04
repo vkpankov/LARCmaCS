@@ -1,3 +1,3 @@
 #!/bin/sh
-protoc --cpp_out=cpp *.proto
+./protoc --cpp_out=cpp *.proto
 
