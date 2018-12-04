@@ -9,7 +9,8 @@
 #include <iostream>
 #include "mlData.h"
 #include "client.h"
-#define MAX_NUM_ROBOTS 12
+#include "grSim_client.h"
+#define MAX_NUM_ROBOTS 4
 
 using namespace std;
 #include <time.h>       /* clock_t, clock(), CLOCKS_PER_SEC */
@@ -59,6 +60,7 @@ private:
     bool fmtlab;
     bool shutdowncomp;
     bool pause;
+    GrSim_Client grSimClient;
 };
 
 struct MainAlg : public QObject

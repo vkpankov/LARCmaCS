@@ -130,6 +130,7 @@ void RemoteControl::RC_send(void)
 
     qDebug() << "emit " << xVel << " " << yVel;
     emit RC_control(xVel, yVel, r, 0, kickUp);
+    grSimClient.sendCommand(xVel, yVel, r, kickUp*10, 0,  1);
 
     return;
 

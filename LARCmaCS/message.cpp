@@ -119,3 +119,27 @@ quint32 Message::calculateCRC(const QByteArray &buf, int len)
 
     return crc ^ 0xFFFFFFFF;
 }
+
+int Message::getSpeedX(){
+    return mSpeedX;
+}
+
+int Message::getSpeedY(){
+    return mSpeedY;
+}
+
+int Message::getSpeedR(){
+    return mSpeedR;
+}
+
+int Message::getKickForward(){
+    return mKickForward;
+}
+
+int Message::getKickUp(){
+    return mKickUp;
+}
+
+int Message::getSpeedDribbler(){
+    return mSpeedDribbler;
+}

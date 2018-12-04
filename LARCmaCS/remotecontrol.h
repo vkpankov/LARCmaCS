@@ -2,6 +2,11 @@
 
 #include <QWidget>
 #include <QTimer>
+#include "grSim_Packet.pb.h"
+#include "grSim_Commands.pb.h"
+#include "grSim_Replacement.pb.h"
+#include "grSim_client.h"
+
 namespace Ui {
 class RemoteControl;
 }
@@ -18,11 +23,14 @@ public:
     ~RemoteControl();
 private:
     QTimer timer;
+    GrSim_Client grSimClient;
+
     void keyPressEvent(QKeyEvent *key);
     void keyReleaseEvent(QKeyEvent * key);
     int keys[256];
     int key_shift;
     int effort;
+
 private slots:
     void RC_send(void);
 public slots:

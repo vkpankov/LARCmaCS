@@ -94,10 +94,18 @@ void MainAlgWorker::init(){
     else {
         cerr << "...bad" << endl;
         char *str = new char[16];
-        str = "Robofootball";
+		int i = 0;
+		for (char c : "main") {
+			str[i++] = c;
+		}
+		rcconfig.file_of_matlab = str;
+		i = 0;
+
+		for (char c : "Robofootball") {
+			str[i++] = c;
+		}
         rcconfig.name = str;
-        str = "main";
-        rcconfig.file_of_matlab=str;
+
         rcconfig.RULE_AMOUNT=5;
         rcconfig.RULE_LENGTH=7;
         rcconfig.BACK_AMOUNT=10;
@@ -237,8 +245,10 @@ void MainAlgWorker::run(PacketSSL packetssl)
         for (int j = 0; j < fmldata.config.RULE_LENGTH; j++) {
             newmess[j]=ruleArray[j * fmldata.config.RULE_AMOUNT + i];
         }
+
         if (newmess[0]==1)
         {
+
             char * newmessage=new char[100];
             memcpy(newmessage,newmess,100);
             if ((newmess[1]>=0) && (newmess[1]<=MAX_NUM_ROBOTS) && ((newmess[1]==0) || (Send2BT[newmess[1]-1]==true)))
@@ -249,11 +259,22 @@ void MainAlgWorker::run(PacketSSL packetssl)
             msg.setKickerChargeEnable(1);
 
             if (!isPause) {
+               if (newmess[1]>0){
+                   qDebug("MESSAGE %d, %d, %d", (int)newmess[2], (int)newmess[3], (int)newmess[5]);
+                   grSimClient.sendCommand((int)newmess[2]/100.0, (int)newmess[3]/100.0, (int)newmess[5]/100.0,
+                                           0,0, (int)newmess[1]);
+
+                }
+
                 msg.setSpeedX(newmess[2]);
                 msg.setSpeedY(newmess[3]);
                 msg.setSpeedR(newmess[5]);
+
+
               
                 msg.setKickForward(newmess[4]);
+
+
             } else {
                 msg.setSpeedX(0);
                 msg.setSpeedY(0);
@@ -271,10 +292,19 @@ void MainAlgWorker::run(PacketSSL packetssl)
             QByteArray command = msg.generateByteArray();
 
             if (newmess[1]==0)
-                for (int i=1; i<=MAX_NUM_ROBOTS; i++)
+                for (int i=1; i<=MAX_NUM_ROBOTS; i++){
+                    grSimClient.sendCommand(msg.getSpeedX(), msg.getSpeedY(), msg.getSpeedR(),
+                                            5*msg.getKickForward(), 5*msg.getKickUp(), i);
                     emit sendToConnector(i,command);
+                }
             if ((newmess[1]>0) && (newmess[1]<=MAX_NUM_ROBOTS))
+            {
+
+                qDebug("MESSAGE");
+               // grSimClient.sendCommand(msg.getSpeedX(), msg.getSpeedY(), msg.getSpeedR(),
+                //                        5*msg.getKickForward(), 5*msg.getKickUp(), newmess[1]);
                 emit sendToConnector(newmess[1],command);
+            }
         }
     }
 
@@ -354,9 +384,13 @@ void MainAlgWorker::run(PacketSSL packetssl)
 
         msg.setKickForward(0);
 
+
+
         QByteArray command = msg.generateByteArray();
         for (int i = 1; i <= 12; i++) {
             emit sendToConnector(i, command);
+            grSimClient.sendCommand(0, 0, 0, 0, 0, i - 1);
+            qDebug("Pause command sent");
         }
     }
 

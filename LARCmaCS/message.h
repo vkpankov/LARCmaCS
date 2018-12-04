@@ -18,6 +18,13 @@ public:
     void setKickUp(int kickUp);
     void setKickForward(int kickForward);
 
+    int getSpeedX();
+    int getSpeedY();
+    int getSpeedR();
+    int getSpeedDribbler();
+    int getKickUp();
+    int getKickForward();
+
     QByteArray generateByteArray();
 
 private:
