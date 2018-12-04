@@ -73,6 +73,7 @@ SOURCES += main.cpp\
     ipdialog.cpp \
     client.cpp \
     reference.cpp \
+    ../macsCommon/net/grSim_client.cpp
 
 HEADERS  += \
   $${SHARED_DIR}/net/netraw.h \
@@ -95,6 +96,7 @@ HEADERS  += \
     ipdialog.h \
     client.h \
     reference.h \
+    ../macsCommon/net/grSim_client.h
 
 FORMS    += larcmacs.ui \
     remotecontrol.ui \
